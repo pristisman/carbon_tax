@@ -1,0 +1,30 @@
+---
+title: "The distributional effects of a carbon tax: A microsimulation study for Argentina"
+author: "Asad Azhar | David Gentili | Ines Dezcallar | Priscila Stisman"
+format: pdf
+editor: visual
+---
+
+**Objective**\
+This project aims to quantify the distributional impacts of carbon taxation in Argentina through microsimulation. The focus will be on simulating the taxes levied on each household's energy consumption.
+
+**Motivation**\
+Carbon taxes are increasingly seen as a crucial tool to drive environmental sustainability by reducing greenhouse gas emissions. However, literature suggests that they can be regressive, disproportionately burdening lower-income households. This is particularly concerning given the global push toward ecological transition and sustainability. As countries implement carbon tax policies to meet their climate goals, it is essential to assess their potential socioeconomic impacts. Understanding how various income groups will be affected is critical to ensuring that the transition to a sustainable economy is both fair and inclusive. A well-designed policy can help mitigate the risk of exacerbating inequality, ensuring that environmental goals are achieved without disproportionately harming vulnerable populations.
+
+**Data**\
+The primary dataset for this analysis is the [*Encuesta Nacional de Gastos de los Hogares* (ENGHO)](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-4) from 2017/2018 (latest available year), which provides detailed household-level data on energy consumption and expenditures. This dataset also includes information about household income, which is crucial for assessing the regressivity of the carbon tax.
+
+**Proposed Methodology**\
+We will simulate various carbon tax rates based on the energy consumption profiles of households, applying taxes proportional to the amount of energy consumed by each household. This microsimulation approach will enable us to model different carbon tax scenarios and evaluate their effects on households across different income brackets. Furthermore, we will explore potential compensatory measures, such as targeted cash transfers or subsidies, to mitigate the negative effects on vulnerable households.
+
+We will analyze various carbon tax schemes implemented in other countries to assess their suitability for Argentina. If necessary, we will propose adjustments or design a new scheme based on existing literature. All assumptions underlying the proposed scheme will be explicitly stated in the project.
+
+**References**
+
+Ahumada, H., Espina-Mairal, S., Navajas, F., & Rasteletti, A. (2023). *Effective Carbon Rates on Energy Use in Latin America and the Caribbean: Estimates and Directions of Reform*. <https://doi.org/10.18235/0004778>
+
+Berry, A. (2019). The distributional effects of a carbon tax and its impact on fuel poverty: A microsimulation study in the French context. *Energy Policy, 124*, 81-94. https://doi.org/10.1016/j.enpol.2018.09.058
+
+Can, Zeynep and O'Donoghue, Cathal and Sologon, Denisa Maria, The Distributional Effects of Carbon Pricing in Türkiye. IZA Discussion Paper No. 17701, Available at SSRN: <https://ssrn.com/abstract=5142313> or [http://dx.doi.org/10.2139/ssrn.5142313](https://dx.doi.org/10.2139/ssrn.5142313)
+
+Missbach, L., Steckel, J. C., & Vogt-Schilb, A. (2023). *Cash transfers in the context of carbon pricing reforms in Latin America and the Caribbean*. <https://doi.org/10.18235/0004568>

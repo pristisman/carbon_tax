@@ -4,6 +4,37 @@ library(dplyr)
 
 #https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-4
 
+# Los nombres del primer tipo de variables, las relevadas en el cuestionario, están
+# formados por letras y números. En el caso de las variables del cuestionario de vi-
+#   vienda y hogar, las primeras dos letras determinan el capítulo al que pertenecen –en
+# el cuestionario, cada uno tiene entre paréntesis las letras que lo identifican– y el nú-
+#   mero refiere al orden de la pregunta. Por ejemplo: la variable cv1c04 corresponde a
+# la pregunta número 4 del bloque 1C del capítulo Características de la vivienda (CV).
+
+# Por ejemplo, propauto indica si el hogar es o no
+# propietario de automóvil.
+# Las variables que inician con la letra J en la base de hogares refieren a las caracterís-
+#   ticas del jefe o la jefa del hogar, cuyo correlato sin la letra J se encontrará en la base
+# de personas.
+
+
+# Tanto la base de hogares como la de personas cuentan con variables de gastos
+# agregados calculadas con base en diversos criterios. Estas variables se identifican
+# con la letra G al principio del nombre.
+# En el caso de los ingresos, los montos por cada fuente se identifican con la inicial i
+# (por ejemplo: ijubilaciones). Por cada variable de monto, se encontrará una variable
+# con prefijo m_ y una variable con sufijo _imp, marca de imputación y monto imputa-
+#   do respectivamente, tanto en la base de hogares como en la de personas.
+
+#https://www.indec.gob.ar/ftp/cuadros/menusuperior/engho/engho2017_18_manual_uso_bases.pdf
+
+personas <- read_delim(here("data","engho2018_personas.txt"),
+                      delim = "|",
+                      col_names = FALSE,
+                      locale = locale(encoding = "Latin1")
+)
+
+
 hh_2018 <- read_delim(here("data","engho2018_hogares.txt"),
   delim = "|",
   col_names = FALSE,
@@ -45,4 +76,4 @@ equipamientos <-  read_delim((here("data",
 
 # A0451101 - Electricidad de la vivienda principal Kw/h
 
-gastos %>% filter(articulo == "A0451101")
+gastos_electricity <- gastos %>% filter(articulo == "A0451101")

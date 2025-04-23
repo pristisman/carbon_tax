@@ -28,13 +28,19 @@ library(dplyr)
 
 #https://www.indec.gob.ar/ftp/cuadros/menusuperior/engho/engho2017_18_manual_uso_bases.pdf
 
-personas <- read_delim(here("data","engho2018_personas.txt"),
-                      delim = "|",
-                      col_names = FALSE,
-                      locale = locale(encoding = "Latin1")
-)
 
 
+##### LOAD ALL AVAILABLE DATASETS
+
+##### Individual
+# personas <- read_delim(here("data","engho2018_personas.txt"),
+#                       delim = "|",
+#                       col_names = FALSE,
+#                       locale = locale(encoding = "Latin1")
+# )
+
+
+#####  Household - WE USE THIS FOR HOUSEHOLD INCOME
 hh_2018 <- read_delim(here("data","engho2018_hogares.txt"),
   delim = "|",
   col_names = FALSE,
@@ -49,31 +55,95 @@ colnames(hh_2018) <- strsplit(
 # Count of missing values in each column
 colSums(is.na(hh_2018))
 
+# First rows as colnames
+colnames(hh_2018) <- as.character(unlist(hh_2018[1, ]))
+hh_2018 <- hh_2018[-1, ]
+hh_2018 <- type.convert(hh_2018, as.is = TRUE)
+
+
+##### Expenditures - WE USE THIS FOR HOUSEHOLD EXPENDITURE IN ENERGY
+gastos <- read_delim((here("data",
+                           "engho2018_gastos.txt")),
+                     delim = "|",
+                     locale = locale(encoding = "Latin1")
+)
+
+##### Articles - Equipment
+# articulos_equipamientos <- read_delim((here("data",
+#                                             "engho2018_articulos_equipamiento.txt")),
+#                                       delim = "|",
+#                                       locale = locale(encoding = "Latin1")
+# )
+
+
+
+##### Equipment
+# equipamientos <-  read_delim((here("data",
+#                                    "engho2018_equipamiento.txt")),
+#                              delim = "|",
+#                              locale = locale(encoding = "Latin1")
+# )
+
+
+##### Replicas
+# replicas <-  read_delim((here("data",
+#                               "engho2018_replicas.txt")),
+#                         delim = "|",
+#                         locale = locale(encoding = "Latin1")
+# )
+
+
+
+##### Codebook #####
 codes <- read_delim(here("data",
   "engho2018_articulos.txt"),
   delim = "|",
   locale = locale(encoding = "Latin1")
 )
 
-articulos_equipamientos <- read_delim((here("data",
-                              "engho2018_articulos_equipamiento.txt")),
-  delim = "|",
-  locale = locale(encoding = "Latin1")
-)
-
-gastos <- read_delim((here("data",
-                              "engho2018_gastos.txt")),
-                        delim = "|",
-                        locale = locale(encoding = "Latin1")
-)
-
-equipamientos <-  read_delim((here("data",
-                                   "engho2018_equipamiento.txt")),
-                             delim = "|",
-                             locale = locale(encoding = "Latin1")
-)
 
 
-# A0451101 - Electricidad de la vivienda principal Kw/h
 
-gastos_electricity <- gastos %>% filter(articulo == "A0451101")
+
+
+
+
+########################################################
+##### Energy expenditure: electricity, gas, others ##### 
+########################################################
+
+
+energy_exp <- gastos %>%
+  filter(articulo %in% c("A0451101", "A0451102", "A0451103",
+                         "A0452101", "A0452102", "A0452103", 
+                         "A0452104", "A0452105", 
+                         "A0453101", "A0453102", "A0453103")) %>%
+  mutate(articulo_label = case_when(
+    articulo == "A0451101" ~ "Electricidad - vivienda principal",
+    articulo == "A0451102" ~ "Electricidad - vivienda secundaria",
+    articulo == "A0451103" ~ "Gastos de electricidad realizados para una vivienda ocupada por otro hogar",
+    articulo == "A0452101" ~ "Gas envasado en garrafas",
+    articulo == "A0452102" ~ "Gas a granel",
+    articulo == "A0452103" ~ "Gas natural - vivienda principal",
+    articulo == "A0452104" ~ "Gas envasado en tubo",
+    articulo == "A0452105" ~ "Gas natural - vivienda secundaria",
+    articulo == "A0453101" ~ "Kerosene",
+    articulo == "A0453102" ~ "Leña y carbón",
+    articulo == "A0453103" ~ "Otros combustibles para el hogar",
+    TRUE ~ "Otro"
+  ))
+
+
+###########################
+##### Household Income ####
+###########################
+
+income_hh <- hh_2018 %>% select(id, ingtoth, ingpch)
+
+
+## Join
+
+carbon_tax <- energy_exp %>%
+  left_join(income_hh %>% select(id, ingtoth), by = "id") %>%
+  select (-miembro, -subclase, -clase, -grupo, -division, -forma_pago, -modo_adq, -lugar_adq, -tipo_negocio)
+

@@ -69,20 +69,20 @@ gastos <- read_delim((here("data",
 )
 
 ##### Articles - Equipment
-# articulos_equipamientos <- read_delim((here("data",
-#                                             "engho2018_articulos_equipamiento.txt")),
-#                                       delim = "|",
-#                                       locale = locale(encoding = "Latin1")
-# )
+articulos_equipamientos <- read_delim((here("data",
+                                             "engho2018_articulos_equipamiento.txt")),
+                                       delim = "|",
+                                       locale = locale(encoding = "Latin1")
+ )
 
 
 
 ##### Equipment
 # equipamientos <-  read_delim((here("data",
-#                                    "engho2018_equipamiento.txt")),
+#                                 "engho2018_equipamiento.txt")),
 #                              delim = "|",
-#                              locale = locale(encoding = "Latin1")
-# )
+#                            locale = locale(encoding = "Latin1")
+#  )
 
 
 ##### Replicas
@@ -147,3 +147,4 @@ carbon_tax <- energy_exp %>%
   left_join(income_hh %>% select(id, ingtoth), by = "id") %>%
   select (-miembro, -subclase, -clase, -grupo, -division, -forma_pago, -modo_adq, -lugar_adq, -tipo_negocio)
 
+?ntile

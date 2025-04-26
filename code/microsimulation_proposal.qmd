@@ -1,6 +1,6 @@
 ---
 title: "Microsimulation - Household Carbon Tax in Argentina"
-author: "Priscilla Stitsman, Ines Dezcallar, David Gentili and Asad Azhar"
+author: "Priscila Stitsman, Ines Dezcallar, David Gentili and Asad Azhar"
 editor: visual
 format:
   html:

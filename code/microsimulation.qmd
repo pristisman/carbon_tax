@@ -1,0 +1,335 @@
+---
+title: "Modeling the Impact of a Household Carbon Tax in Argentina: A Microsimulation Exercise"
+author: "Priscila Stitsman, Ines Dezcallar, David Gentili and Asad Azhar"
+format: html
+editor: visual
+---
+
+
+```{r}
+#Library Setup
+library(readr)
+library(here)
+library(tidyverse)
+library(ggplot2)
+```
+
+##Loading Dataset
+```{r}
+####  Household Income 
+hh_2018 <- read_delim(here("data","engho2018_hogares.txt"),
+  delim = "|",
+  col_names = FALSE,
+  locale = locale(encoding = "Latin1")
+)
+
+colnames(hh_2018) <- strsplit(
+  "id.provincia.region.subregion.trimestre.anio.pondera.cv1c04.cv1c05_a.cv1c05_b.cv1c05_c.cv1c05_d.cv1c06_e.cv1c06_f.cv1c07.cv1c08.cv1c09.cv1c10.cv1c11.cv1c12.cv1c13.ch01.ch02.ch03.ch04.ch05.ch06.ch07.ch08.ch09.ch10.ch11.ch12.ch13.ch14.ch15.ch16.ch17_a.ch17_b.ch18.ch19.ch20.ch21.propauto.regten.hacina.jniveled.jsexo.jedad_agrup.jsitconyugal.jdif_lp.jestado.jocupengh.jpercept.jcomed.tipohog.cantping.reldep.cantmiem.cantadequi.menor18.menor14.mayor65.dif_lph.cant_act.permieoc.clima_educativo.gastot.gastotpc.gasto_comunh.gascomp.gasvent.gc_01.gc_02.gc_03.gc_04.gc_05.gc_06.gc_07.gc_08.gc_09.gc_10.gc_11.gc_12.gc09_01.gc09_02.gc09_03.gc09_04.gc09_05.gc09_06.gc09_07.gc09_08.gc09_09.fp_contado.fp_credito.fp_especie.fp_prodprop.fp_tarjetas.fp_otras.fp_indef.tn_hipsup.tn_autoserv.tn_negesp.tn_restaurant.tn_kiosco.tn_internet.tn_comedor.tn_especie.tn_otros.tn_indef.decgaphp.decgaphr.decgapht.quigaphp.quigaphr.quigapht.gasto_imputado.m_gasto_imputado.ingtoth.ingpch.m_ingtoth.ingtoth_imp.qinth_p.qinth_r.qinth_t.dinth_p.dinth_r.dinth_t.qinpch_p.qinpch_r.qinpch_t.dinpch_p.dinpch_r.dinpch_t",
+  "\\."
+)[[1]]
+
+# Count of missing values in each column
+#colSums(is.na(hh_2018))
+
+# First rows as colnames
+colnames(hh_2018) <- as.character(unlist(hh_2018[1, ]))
+hh_2018 <- hh_2018[-1, ]
+hh_2018 <- type.convert(hh_2018, as.is = TRUE)
+
+##### Household Expenditure
+
+gastos <- read_delim((here("data",
+                           "engho2018_gastos.txt")),
+                     delim = "|",
+                     locale = locale(encoding = "Latin1"))
+##### Codebook
+
+codes <- read_delim(here("data",
+  "engho2018_articulos.txt"),
+  delim = "|",
+  locale = locale(encoding = "Latin1")
+)
+```
+##Cleaning & Wrangling Data
+```{r}
+########################################################
+##### Energy expenditure: electricity, gas, others ##### 
+########################################################
+
+
+energy_exp <- gastos %>%
+  filter(articulo %in% c("A0451101", "A0451102", "A0451103",
+                         "A0452101", "A0452102", "A0452103", 
+                         "A0452104", "A0452105", 
+                         "A0453101", "A0453102", "A0453103")) %>%
+  mutate(articulo_label = case_when(
+    articulo == "A0451101" ~ "Electricidad - vivienda principal",
+    articulo == "A0451102" ~ "Electricidad - vivienda secundaria",
+    articulo == "A0451103" ~ "Gastos de electricidad realizados para una vivienda ocupada por otro hogar",
+    articulo == "A0452101" ~ "Gas envasado en garrafas",
+    articulo == "A0452102" ~ "Gas a granel",
+    articulo == "A0452103" ~ "Gas natural - vivienda principal",
+    articulo == "A0452104" ~ "Gas envasado en tubo",
+    articulo == "A0452105" ~ "Gas natural - vivienda secundaria",
+    articulo == "A0453101" ~ "Kerosene",
+    articulo == "A0453102" ~ "Leña y carbón",
+    articulo == "A0453103" ~ "Otros combustibles para el hogar",
+    TRUE ~ "Otro"
+  ))
+
+
+###########################
+##### Household Income ####
+###########################
+
+income_hh <- hh_2018 %>% select(id, ingtoth, ingpch)
+
+
+## Merging household income with expenditure in energy 
+
+carbon_tax <- energy_exp %>%
+  left_join(income_hh %>% select(id, ingtoth), by = "id") %>%
+  select (-miembro, -subclase, -clase, -grupo, -division, -forma_pago, -modo_adq, -lugar_adq, -tipo_negocio)
+
+```
+
+## Microsimulation
+###  Model I:  A uniform tax across all households
+
+```{r}
+#Suppose we add a 10% tax on the price paid by all households. What would be the final amount paid, the income effect and revenue effect?
+
+# Función para calcular el impuesto al carbono (10% sobre el monto de energía)
+calculate_carbon_tax <- function(monto) {
+  tax <- monto * 0.10
+  return(tax)
+}
+
+# Aplicar la función a tu dataframe
+carbon_tax <- carbon_tax %>%
+  mutate(
+    carbon_tax = map_dbl(
+      .x = monto,
+      .f = calculate_carbon_tax
+    ),
+    # Calcular el ingreso neto después del impuesto
+    net_income = ingtoth - carbon_tax
+  )
+
+```
+
+
+```{r}
+
+# Partiendo del dataframe carbon_tax ya procesado con el impuesto aplicado
+# Calcular los deciles de ingreso
+carbon_tax <- carbon_tax %>%
+  # Creamos una variable de decil basada en el ingreso total
+  mutate(
+    decile = ntile(ingtoth, 10)
+  )
+
+# Calcular valores promedio por decil
+decile_averages <- carbon_tax %>%
+  group_by(decile) %>%
+  summarise(
+    avg_total_income = mean(ingtoth, na.rm = TRUE),
+    avg_net_income = mean(net_income, na.rm = TRUE),
+    avg_tax = mean(carbon_tax, na.rm = TRUE),
+    # Calcular el porcentaje que representa el impuesto del ingreso total
+    tax_percentage = mean(carbon_tax/ingtoth * 100, na.rm = TRUE)
+  )
+
+# Convertir a formato largo para graficar
+plot_data <- decile_averages %>%
+  select(decile, avg_total_income, avg_net_income) %>%
+  pivot_longer(
+    cols = c(avg_total_income, avg_net_income),
+    names_to = "income_type",
+    values_to = "value"
+  )
+
+# Crear gráfico de barras de ingresos -NO CAMBIA NADA PQ LE QUITAMOS 10% A CADA HOGAR
+income_plot <- ggplot(plot_data, aes(x = factor(decile), y = value, fill = income_type)) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(values = c("avg_total_income" = "blue", "avg_net_income" = "red"),
+                    labels = c("Ingreso Total", "Ingreso Neto")) +
+  labs(
+    title = "Impacto del impuesto al carbono por decil de ingreso",
+    x = "Decil de ingreso",
+    y = "Ingreso promedio",
+    fill = ""
+  ) +
+  theme_minimal()
+
+# Gráfico para ver la carga impositiva relativa
+tax_burden_plot <- ggplot(decile_averages, aes(x = factor(decile), y = tax_percentage)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(
+    title = "Impuesto al carbono como porcentaje del ingreso por decil",
+    x = "Decil de ingreso",
+    y = "Impuesto como % del ingreso"
+  ) +
+  theme_minimal()
+
+# Mostrar los gráficos
+print(income_plot)
+print(tax_burden_plot)
+
+```
+
+
+### Model II: Tax varies according to energy source, with more pollutant sources with higher taxes
+
+```{r}
+# Función que aplica tasas de impuesto diferenciadas por tipo de artículo/energía
+calculate_carbon_tax <- function(monto, articulo) {
+  # Tax rates based on type of energy
+  tax_rates <- case_when(
+    # Combustibles fósiles altamente contaminantes
+    articulo == "A0453101" ~ 0.25,  # Kerosene (25%)
+    articulo == "A0453103" ~ 0.20,  # Otros combustibles (20%)
+    
+    # Gas (emisiones medias)
+    articulo == "A0452101" ~ 0.15,  # Gas envasado en garrafas (15%)  
+    articulo == "A0452102" ~ 0.15,  # Gas a granel (15%)
+    articulo == "A0452103" ~ 0.12,  # Gas natural - vivienda principal (12%)
+    articulo == "A0452104" ~ 0.15,  # Gas envasado en tubo (15%)
+    articulo == "A0452105" ~ 0.12,  # Gas natural - vivienda secundaria (12%)
+    
+    # Electricidad (varía según matriz energética, pero es menos contaminante directamente)
+    articulo == "A0451101" ~ 0.08,  # Electricidad - vivienda principal (8%)
+    articulo == "A0451102" ~ 0.10,  # Electricidad - vivienda secundaria (10%)
+    articulo == "A0451103" ~ 0.10,  # Gastos de electricidad para otra vivienda (10%)
+    
+    # Leña y carbón (puede ser renovable o no dependiendo de la fuente)
+    articulo == "A0453102" ~ 0.18,  # Leña y carbón (18%)
+    
+    # Otros
+    TRUE ~ 0.10                     # Tasa estándar (10%)
+  )
+  
+  # Calculate tax
+  tax <- monto * tax_rates
+  return(tax)
+}
+
+# Step 1: calculate tax by energy type
+carbon_tax <- carbon_tax %>%
+  mutate(
+    carbon_tax_item = map2_dbl(
+      .x = monto,
+      .y = articulo,
+      .f = calculate_carbon_tax
+    ),
+    # Effective tax rate
+    tax_rate = carbon_tax_item / monto
+  )
+
+# Step 2: Total tax paid by household
+household_tax <- carbon_tax %>%
+  group_by(id) %>%
+  summarise(
+    total_carbon_tax = sum(carbon_tax_item, na.rm = TRUE),
+    ingtoth = first(ingtoth)  # Take the first income by id (it is the same for each id) 
+  ) %>%
+  mutate(
+    net_income = ingtoth - total_carbon_tax
+  )
+
+# Step 3: Calculate deciles based on income
+household_tax <- household_tax %>%
+  mutate(
+    decile = ntile(ingtoth, 10)
+  )
+
+# Step 4: Analyzing income
+decile_analysis <- household_tax %>%
+  group_by(decile) %>%
+  summarise(
+    avg_total_income = mean(ingtoth, na.rm = TRUE),
+    avg_net_income = mean(net_income, na.rm = TRUE),
+    avg_tax = mean(total_carbon_tax, na.rm = TRUE),
+    avg_tax_burden = mean(total_carbon_tax/ingtoth * 100, na.rm = TRUE) 
+  )
+
+# Paso 5: Análisis por decil y tipo de energía (uniendo con la información original)
+# Primero asegurarnos de tener el decil en el dataframe original
+carbon_tax_with_decile <- carbon_tax %>%
+  # Usamos left_join para añadir la columna decile desde household_tax
+  left_join(
+    household_tax %>% select(id, decile, total_carbon_tax), 
+    by = "id"
+  )
+
+# Ahora podemos hacer el análisis por decil y tipo de energía
+decile_fuel_analysis <- carbon_tax_with_decile %>%
+  group_by(decile, articulo_label) %>%
+  summarise(
+    avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
+    avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  # Tasa promedio en porcentaje
+    count = n()  # Número de hogares que usan esta fuente
+  )
+
+# Gráfico 1: Impuesto como porcentaje del ingreso por decil
+tax_burden_plot <- ggplot(
+  decile_analysis,
+  aes(x = factor(decile), y = avg_tax_burden)
+) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(
+    title = "Impuesto al carbono como porcentaje del ingreso por decil",
+    x = "Decil de ingreso",
+    y = "Impuesto como % del ingreso"
+  ) +
+  theme_minimal()
+
+# Gráfico 2: Comparación de ingreso antes y después de impuestos por decil
+income_comparison <- decile_analysis %>%
+  select(decile, avg_total_income, avg_net_income) %>%
+  pivot_longer(
+    cols = c(avg_total_income, avg_net_income),
+    names_to = "income_type",
+    values_to = "amount"
+  )
+
+income_plot <- ggplot(
+  income_comparison,
+  aes(x = factor(decile), y = amount, fill = income_type)
+) +
+  geom_bar(stat = "identity", position = position_dodge()) +
+  scale_fill_manual(
+    values = c("avg_total_income" = "blue", "avg_net_income" = "red"),
+    labels = c("Ingreso Total", "Ingreso Neto")
+  ) +
+  labs(
+    title = "Impacto del impuesto al carbono en el ingreso por decil",
+    x = "Decil de ingreso",
+    y = "Ingreso promedio",
+    fill = ""
+  ) +
+  theme_minimal()
+
+# Gráfico 3: Tasa de impuesto promedio por fuente de energía
+energy_tax_plot <- ggplot(
+  decile_fuel_analysis %>% 
+    group_by(articulo_label) %>%
+    summarise(avg_rate = mean(avg_tax_rate, na.rm = TRUE)),
+  aes(x = reorder(articulo_label, avg_rate), y = avg_rate, fill = articulo_label)
+) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Tasa promedio de impuesto por tipo de energía",
+    x = "",
+    y = "Tasa de impuesto (%)"
+  ) +
+  coord_flip() +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Mostrar los gráficos
+print(tax_burden_plot)
+print(income_plot)
+print(energy_tax_plot)
+
+```

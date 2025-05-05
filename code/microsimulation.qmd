@@ -655,6 +655,8 @@ rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 gas_increment <- 0 # Change ratio to increase / decrease tax on gas articles
 fossil_increment <- 0 # Change ratio to increase / decrease tax on fossil articles
+rebate_share <- 1  # Ratio of revenue that goes into rebate (can't be more than 1)
+
 
 # Function that applies differentiated tax rates by type of item/energy
 calculate_carbon_tax <- function(cantidad, articulo, 
@@ -729,17 +731,18 @@ household_tax <- household_tax %>%
 ## Step 3.1: Add rebate if any
 
 total_revenue <- sum(household_tax$total_carbon_tax, na.rm = TRUE)
+rebate_pool <- total_revenue * rebate_share
 
 household_tax <- household_tax %>%
   mutate(
     rebate = case_when(
-      rebate_mode == "uniform" ~ total_revenue / n(),
+      rebate_mode == "uniform" ~ rebate_pool / n(),
       rebate_mode == "by_quintile" & quintile %in% rebate_target_quintiles ~
-        total_revenue / sum(quintile %in% rebate_target_quintiles),
+        rebate_pool / sum(quintile %in% rebate_target_quintiles),
       rebate_mode %in% c("by_quintile", "none") ~ 0,
       TRUE ~ 0
     ),
-    net_income = net_income + rebate  # overwrite net income to include rebate
+    net_income = net_income + rebate  # updated post-rebate income
   )
 
 # Step 4: Analyzing income

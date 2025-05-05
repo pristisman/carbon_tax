@@ -135,7 +135,7 @@ Compared to Argentina, Canada enforces a higher and more uniform carbon price (a
 
 ## Microsimulation Model Structure
 
-#### Basic Microsimlation Model
+#### Basic Microsimulation Model
 
 Our basic model will have the following characteristics:
 
@@ -527,7 +527,6 @@ carbon_tax_burden_model2 <- ggplot(quintile_contributions, aes(x = factor(quinti
 print(income_plot_model2)
 print(tax_burden_plot_model2)
 print(carbon_tax_burden_model2)
-
 
 
 

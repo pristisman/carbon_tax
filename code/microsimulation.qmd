@@ -233,10 +233,6 @@ carbon_tax <- carbon_tax %>%
     net_income = ingtoth - carbon_tax
   )
 
-```
-
-```{r}
-
 # Calculate quintiles
 carbon_tax <- carbon_tax %>%
   # Creamos una variable de decil basada en el ingreso total
@@ -255,6 +251,8 @@ quintile_averages <- carbon_tax %>%
     tax_percentage = mean(carbon_tax/ingtoth * 100, na.rm = TRUE)
   )
 
+
+
 # Pivot long for plotting
 plot_data <- quintile_averages %>%
   select(quintile, avg_total_income, avg_net_income) %>%
@@ -263,32 +261,42 @@ plot_data <- quintile_averages %>%
     names_to = "income_type",
     values_to = "value"
   )
+```
 
-# How much the spend in energy before and after as a proportion of income by quintile (i dont like this one)
-income_plot <- ggplot(plot_data, aes(x = factor(quintile), y = value, fill = income_type)) +
+```{r}
+### OUTPUTS
+
+# $Income – $energy spend: How much income increases or decreases before and after by quintile.
+
+income_plot_model1 <- ggplot(plot_data, aes(x = factor(quintile), y = value, fill = income_type)) +
   geom_bar(stat = "identity", position = position_dodge()) +
-  scale_fill_manual(values = c("avg_total_income" = "blue", "avg_net_income" = "red"),
-                    labels = c("Ingreso Total", "Ingreso Neto")) +
+  scale_fill_manual(
+    values = c("avg_total_income" = "steelblue", "avg_net_income" = "tomato2"),
+    labels = c("Ingreso Total", "Ingreso Neto")
+  ) +
   labs(
-    title = "Impacto del impuesto al carbono por decil de ingreso",
-    x = "Decil de ingreso",
-    y = "Ingreso promedio",
+    title = "Effect of Carbon Tax on Household Income by Quintile",
+    subtitle = "Comparison of average total vs. post-tax (net) income across income groups",
+    x = "Income Quintile (from lowest to highest)",
+    y = "Average Monthly Income (in local currency)",  # adjust unit if needed
     fill = ""
   ) +
   theme_minimal()
 
+
 # Relative Tax Burden
-tax_burden_plot <- ggplot(quintile_averages, aes(x = factor(quintile), y = tax_percentage)) +
+tax_burden_plot_model1 <- ggplot(quintile_averages, aes(x = factor(quintile), y = tax_percentage)) +
   geom_bar(stat = "identity", fill = "darkgreen") +
   labs(
-    title = "Impuesto al carbono como porcentaje del ingreso por decil",
-    x = "Decil de ingreso",
-    y = "Impuesto como % del ingreso"
+    title = "Carbon Tax as a Share of Income by Quintile",
+    subtitle = "Lower-income households bear a larger burden relative to their income",
+    x = "Income Quintile (from lowest to highest)",
+    y = "Carbon Tax (% of Income)"
   ) +
   theme_minimal()
 
 
-# Contribution to gov income revenue
+#Revenue collected by the government
 tax_by_quintile <- carbon_tax %>%
   group_by(quintile) %>%
   summarise(
@@ -300,22 +308,22 @@ tax_by_quintile <- carbon_tax %>%
     tax_share = total_tax / total_revenue * 100  # proporción pagada por cada quintil
   )
 
-tax_share_plot <- ggplot(tax_by_quintile, aes(x = factor(quintile), y = tax_share)) +
-  geom_bar(stat = "identity", fill = "purple") +
+#Contribution by quintile
+tax_share_plot_model1 <- ggplot(tax_by_quintile, aes(x = factor(quintile), y = tax_share)) +
+  geom_bar(stat = "identity", fill = "#5A3989") +
   labs(
-    title = "Participación en la recaudación del impuesto al carbono por quintil",
-    x = "Quintil de ingreso",
-    y = "Porcentaje de la recaudación total (%)"
+    title = "Carbon Tax Burden by Income Quintile",
+    subtitle = "Share of government revenue from carbon tax contributed by each income group",
+    x = "Income Quintile (from lowest to highest)",
+    y = "Share of Total Carbon Tax Revenue (%)"
   ) +
   theme_minimal()
 
 
 
-
-
-print(income_plot)
-print(tax_burden_plot)
-print(tax_share_plot)
+print(income_plot_model1)
+print(tax_burden_plot_model1)
+print(tax_share_plot_model1)
 ```
 
 ### Model II: Tax varies according to energy source, with more pollutant sources with higher taxes, and is consistent with lump sums established by the Argentinian Government.
@@ -421,26 +429,15 @@ quintile_fuel_analysis <- carbon_tax_with_quintile %>%
   group_by(quintile, articulo_label) %>%
   summarise(
     avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
-    avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  # Tasa promedio en porcentaje
-    count = n()  # Número de hogares que usan esta fuente
+    avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  
+    count = n()  
   )
 
+```
 
-
-# Gráfico 1: Impuesto como porcentaje del ingreso por decil
-tax_burden_plot <- ggplot(
-  quintile_analysis,
-  aes(x = factor(quintile), y = avg_tax_burden)
-) +
-  geom_bar(stat = "identity", fill = "darkgreen") +
-  labs(
-    title = "Impuesto al carbono como porcentaje del ingreso por decil",
-    x = "Decil de ingreso",
-    y = "Impuesto como % del ingreso"
-  ) +
-  theme_minimal()
-
-# Gráfico 2: Comparación de ingreso antes y después de impuestos por decil
+```{r}
+#### OUTPUTS
+# $Income – $energy spend: How much income increases or decreases before and after by quintile.
 income_comparison <- quintile_analysis %>%
   select(quintile, avg_total_income, avg_net_income) %>%
   pivot_longer(
@@ -449,42 +446,64 @@ income_comparison <- quintile_analysis %>%
     values_to = "amount"
   )
 
-income_plot <- ggplot(
+income_plot_model2 <- ggplot(
   income_comparison,
   aes(x = factor(quintile), y = amount, fill = income_type)
 ) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(
-    values = c("avg_total_income" = "blue", "avg_net_income" = "red"),
+    values = c("avg_total_income" = "steelblue", "avg_net_income" = "tomato2"),
     labels = c("Ingreso Total", "Ingreso Neto")
   ) +
   labs(
-    title = "Impacto del impuesto al carbono en el ingreso por decil",
-    x = "Decil de ingreso",
-    y = "Ingreso promedio",
+    title = "Effect of Carbon Tax on Household Income by Quintile",
+    subtitle = "Comparison of average total vs. post-tax (net) income across income groups",
+    x = "Income Quintile (from lowest to highest)",
+    y = "Average Monthly Income (in local currency)",  # adjust unit if needed
     fill = ""
   ) +
-  theme_minimal() ###ESTE LO SACARIA
+  theme_minimal() 
 
-# Gráfico 3: Tasa de impuesto promedio por fuente de energía
-energy_tax_plot <- ggplot(
-  quintile_fuel_analysis %>% 
-    group_by(articulo_label) %>%
-    summarise(avg_rate = mean(avg_tax_rate, na.rm = TRUE)),
-  aes(x = reorder(articulo_label, avg_rate), y = avg_rate, fill = articulo_label)
+
+
+# Relative Tax Burden
+tax_burden_plot_model2 <- ggplot(
+  quintile_analysis,
+  aes(x = factor(quintile), y = avg_tax_burden)
 ) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", fill = "darkgreen") +
   labs(
-    title = "Tasa promedio de impuesto por tipo de energía",
-    x = "",
-    y = "Tasa de impuesto (%)"
+    title = "Carbon Tax as a Share of Income by Quintile",
+    subtitle = "Lower-income households bear a larger burden relative to their income",
+    x = "Income Quintile (from lowest to highest)",
+    y = "Carbon Tax (% of Income)"
   ) +
-  coord_flip() +
-  theme_minimal() +
-  theme(legend.position = "none")
+  theme_minimal()
+
+
+
+# Gráfico 3: Tasa de impuesto promedio por fuente de energía SHOULD WE DELETE THIS ONE?
+# energy_tax_plot <- ggplot(
+#   quintile_fuel_analysis %>% 
+#     group_by(articulo_label) %>%
+#     summarise(avg_rate = mean(avg_tax_rate, na.rm = TRUE)),
+#   aes(x = reorder(articulo_label, avg_rate), y = avg_rate, fill = articulo_label)
+# ) +
+#   geom_bar(stat = "identity") +
+#   labs(
+#     title = "Tasa promedio de impuesto por tipo de energía",
+#     x = "",
+#     y = "Tasa de impuesto (%)"
+#   ) +
+#   coord_flip() +
+#   theme_minimal() +
+#   theme(legend.position = "none")
 
 
 # Contribution to gov income revenue
+
+#Revenue collected by the government
+
 
 total_revenue <- sum(household_tax$total_carbon_tax, na.rm = TRUE)
 quintile_contributions <- household_tax %>%
@@ -496,28 +515,30 @@ quintile_contributions <- household_tax %>%
     percent_contribution = 100 * total_tax_paid / total_revenue
   )
 
-ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
-  geom_bar(stat = "identity", fill = "purple") +
+carbon_tax_burden_model2 <- ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
+  geom_bar(stat = "identity", fill = "#5A3989") +
   labs(
-    title = "Carbon Tax Revenue Contribution by Income Quintile",
-    x = "Income Quintile",
-    y = "Share of Total Revenue (%)"
+ title = "Carbon Tax Burden by Income Quintile",
+    subtitle = "Share of government revenue from carbon tax contributed by each income group",
+    x = "Income Quintile (from lowest to highest)",
+    y = "Share of Total Carbon Tax Revenue (%)"
   ) +
   theme_minimal()
 
 
-# Mostrar los gráficos
-print(tax_burden_plot)
-print(income_plot)
-print(energy_tax_plot)
+# Show plots
+print(income_plot_model2)
+print(tax_burden_plot_model2)
+print(carbon_tax_burden_model2)
 
 
 
 
 
 
-extend this to be changed: 
-  the diferences between two > if there is a 300, small difference, focus of the change 
+##extend this to be changed: 
+ ## the diferences between two > if there is a 300, small difference, focus of the change 
+# WHAT IS THIS?
 
 ```
 

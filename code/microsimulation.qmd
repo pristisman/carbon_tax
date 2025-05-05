@@ -544,6 +544,8 @@ print(carbon_tax_burden_model2)
 
 ### Model III: Tax varies according to energy source, with more pollutant sources with higher taxes, following the Canadian Model
 
+#### Description
+
 In this second model, we aim to recreate a more plausible carbon tax system, drawing inspiration from Canada’s approach. Like Argentina, Canada sets absolute rates in Canadian dollars per specific volume or weight of various fossil fuels, with more polluting fuels taxed at higher rates than less polluting ones. It establishes specific rates for the following fossil fuels ([source](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/fcrates/fuel-charge-rates.html#fcrts)):
 
 -   Aviation gasoline
@@ -614,6 +616,8 @@ Since not all of the energy sources mentioned above are included in this study, 
 
 As we did in the case of Argentina, we will calculate an average rate per category, corresponding to the mean of the fuel charge rates applied to the relevant energy source usually used by households. For example, the tax applicable to bottled gas will be equal to the average of the rates for Propane, Butane, and Pentanes Plus. Once we have the average rates, we will apply the conversions described above to obtain values that can be compared to Argentina’s 2018 rates.
 
+#### Code
+
 ```{r}
 #Creating fuel charge rates for the different categories of energy sources including in the data by averaging Canada's 2024-2025 fuel charges rates
 
@@ -646,7 +650,7 @@ Canada_rate_per_Energy_source_in_survey <- Canada_rates%>%
                names_to = "energy_type", 
                values_to = "rate")
 
-elasticity <- -0.5   # Change for different scenarios
+elasticity <- 0   # Change for different scenarios
 rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 

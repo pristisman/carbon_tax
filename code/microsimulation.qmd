@@ -155,7 +155,7 @@ As such we have created three basic model that try to emulate three different ca
 
 -   Canada?
 
-#### Data Description 
+#### Data Description
 
 In the data frame we have constructed basing ourselves on the 2018 household survey, we have information covering 21,065 households, identified by the variable "id". The data was collected between November of 2017 and November of 2018.
 
@@ -542,7 +542,7 @@ print(carbon_tax_burden_model2)
 
 ```
 
-### Model III: Tax varies according to energy source, with more pollutant sources with higher taxes, following the Canadian Model 
+### Model III: Tax varies according to energy source, with more pollutant sources with higher taxes, following the Canadian Model
 
 In this second model, we aim to recreate a more plausible carbon tax system, drawing inspiration from Canada’s approach. Like Argentina, Canada sets absolute rates in Canadian dollars per specific volume or weight of various fossil fuels, with more polluting fuels taxed at higher rates than less polluting ones. It establishes specific rates for the following fossil fuels ([source](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/fcrates/fuel-charge-rates.html#fcrts)):
 
@@ -618,60 +618,66 @@ As we did in the case of Argentina, we will calculate an average rate per catego
 #Creating fuel charge rates for the different categories of energy sources including in the data by averaging Canada's 2024-2025 fuel charges rates
 
 Canada_rates <- data.frame(
-        energy_source= c("Propane", "Butane", "Pentanes plus", "Natural Gas", "Kerosene","Gasoline", "Heavy fuel oil", "Light fuel oil", "Methanol", "Naphta"), 
-        rates= c(0.1238, 0.1424, 0.1424, 0.1525, 0.2065, 0.1761, 0.2550, 0.2139, 0.0878, 0.1803))%>%
-        mutate(
-        rates = rates/1.2024
-        )%>%
-        mutate(
-        rates = rates/0.04856
-        )
-  
-  Canada_rates
-  
-  
-  #Averaging these rates into the different energy sources included in the survey
-Canada_rate_per_Energy_source_in_survey <- Canada_rates%>%
- filter(energy_source == "Propane")%>%
-   mutate (
- Gas_1_Garrafas = mean(c(2.120279, 2.438835, 2.438835 )), 
- Gas_2_Granel = mean(c(2.120279, 2.438835, 2.438835 )),
- Gas_3_Tubo = mean(c(2.120279, 2.438835, 2.438835 )),
- Gas_4_Natural = 2.611814, 
- Kerosene = 3.536653,
- Liquid_Fuels = mean(c(3.016003, 4.367295, 3.663390, 1.503720, 3.087935))
+  energy_source= c("Propane", "Butane", "Pentanes plus", "Natural Gas", "Kerosene","Gasoline", "Heavy fuel oil", "Light fuel oil", "Methanol", "Naphta"), 
+  rates= c(0.1238, 0.1424, 0.1424, 0.1525, 0.2065, 0.1761, 0.2550, 0.2139, 0.0878, 0.1803))%>%
+  mutate(
+    rates = rates/1.2024
   )%>%
-     select(-rates, -energy_source)%>%
-     pivot_longer(cols = everything(), 
+  mutate(
+    rates = rates/0.04856
+  )
+
+Canada_rates
+
+
+#Averaging these rates into the different energy sources included in the survey
+Canada_rate_per_Energy_source_in_survey <- Canada_rates%>%
+  filter(energy_source == "Propane")%>%
+  mutate (
+    Gas_1_Garrafas = mean(c(2.120279, 2.438835, 2.438835 )), 
+    Gas_2_Granel = mean(c(2.120279, 2.438835, 2.438835 )),
+    Gas_3_Tubo = mean(c(2.120279, 2.438835, 2.438835 )),
+    Gas_4_Natural = 2.611814, 
+    Kerosene = 3.536653,
+    Liquid_Fuels = mean(c(3.016003, 4.367295, 3.663390, 1.503720, 3.087935))
+  )%>%
+  select(-rates, -energy_source)%>%
+  pivot_longer(cols = everything(), 
                names_to = "energy_type", 
                values_to = "rate")
-  
 
-# Función que aplica tasas de impuesto diferenciadas por tipo de artículo/energía
-calculate_carbon_tax <- function(cantidad, articulo) {
+elasticity <- -0.5   # Change for different scenarios
+rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
+rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
+
+# Function that applies differentiated tax rates by type of item/energy
+calculate_carbon_tax <- function(cantidad, articulo, 
+                                 fossil = 0, #ratio of increment 
+                                 gas = 0) #ratio of increment 
+{
   # Tax rates based on type of energy
   tax_rates <- case_when(
-    # Combustibles fósiles altamente contaminantes
-    articulo == "A0453101" ~ 3.54,  # Kerosene 
-    articulo == "A0453103" ~ 3.02,  # Otros combustibles 
+    # Highly polluting fossil fuels
+    articulo == "A0453101" ~ 3.54* (1 + fossil),  # Kerosene 
+    articulo == "A0453103" ~ 3.02* (1 + fossil),  # Other fuels 
     
-    # Gas (emisiones medias)
-    articulo == "A0452101" ~ 2.12,  # Gas envasado en garrafas 
-    articulo == "A0452102" ~ 2.12,  # Gas a granel
-    articulo == "A0452103" ~ 2.61,  # Gas natural - vivienda principal
-    articulo == "A0452104" ~ 2.12,  # Gas envasado en tubo
-    articulo == "A0452105" ~ 2.61,  # Gas natural - vivienda secundaria 
+    # Gas (medium emissions)
+    articulo == "A0452101" ~ 2.12 * (1 + gas),  # Bottled gas in cylinders 
+    articulo == "A0452102" ~ 2.12 * (1 + gas),  # Bulk gas
+    articulo == "A0452103" ~ 2.61 * (1 + gas),  # Natural gas - primary residence
+    articulo == "A0452104" ~ 2.12 * (1 + gas),  # Gas in tubes
+    articulo == "A0452105" ~ 2.61 * (1 + gas),  # Natural gas - secondary residence 
     
-    # Electricidad (varía según matriz energética, pero es menos contaminante directamente)
-    articulo == "A0451101" ~ 0,  # Electricidad - vivienda principal
-    articulo == "A0451102" ~ 0,  # Electricidad - vivienda secundaria
-    articulo == "A0451103" ~ 0,  # Gastos de electricidad para otra vivienda
+    # Electricity (varies by energy matrix, but directly less polluting)
+    articulo == "A0451101" ~ 0,  # Electricity - primary residence
+    articulo == "A0451102" ~ 0,  # Electricity - secondary residence
+    articulo == "A0451103" ~ 0,  # Electricity expenses for another residence
     
-    # Leña y carbón (puede ser renovable o no dependiendo de la fuente)
-    articulo == "A0453102" ~ 0,  # Leña y carbón 
+    # Firewood and coal (may be renewable or not depending on the source)
+    articulo == "A0453102" ~ 0,  # Firewood and coal 
     
-    # Otros
-    TRUE ~ 0                     # Tasa estándar 
+    # Others
+    TRUE ~ 0                     # Standard rate 
   )
   
   # Calculate tax
@@ -679,16 +685,21 @@ calculate_carbon_tax <- function(cantidad, articulo) {
   return(tax)
 }
 
+
 # Step 1: calculate tax by energy type
-carbon_tax <- carbon_tax %>%
+carbon_tax_t <- carbon_tax %>%
   mutate(
     carbon_tax_item = map2_dbl(
       .x = monto,
       .y = articulo,
-      .f = calculate_carbon_tax
+      .f = calculate_carbon_tax 
     ),
     # Effective tax rate
-    tax_rate = carbon_tax_item / monto
+    tax_rate = carbon_tax_item / monto,
+    
+    # Apply elasticity adjustment to quantity 
+    monto = monto * (1 + tax_rate) ^ elasticity,
+    carbon_tax_item = monto * tax_rate  
   )
 
 # Step 2: Total tax paid by household
@@ -707,6 +718,22 @@ household_tax <- carbon_tax %>%
 household_tax <- household_tax %>%
   mutate(
     quintile= ntile(ingtoth, 5)
+  )
+
+## Step 3.1: Add rebate if any
+
+total_revenue <- sum(household_tax$total_carbon_tax, na.rm = TRUE)
+
+household_tax <- household_tax %>%
+  mutate(
+    rebate = case_when(
+      rebate_mode == "uniform" ~ total_revenue / n(),
+      rebate_mode == "by_quintile" & quintile %in% rebate_target_quintiles ~
+        total_revenue / sum(quintile %in% rebate_target_quintiles),
+      rebate_mode %in% c("by_quintile", "none") ~ 0,
+      TRUE ~ 0
+    ),
+    net_income = net_income + rebate  # overwrite net income to include rebate
   )
 
 # Step 4: Analyzing income
@@ -728,32 +755,15 @@ carbon_tax_with_quintile <- carbon_tax %>%
     by = "id"
   )
 
-
-# Step 6: Calculate Total Carbon Tax Revenue
-total_revenue <- sum(household_tax$total_carbon_tax, na.rm = TRUE)
-
-
-# Step 7: Step 7: Calculate Share of Revenue per Quintile
-quintile_contributions <- household_tax %>%
-  group_by(quintile) %>%
-  summarise(
-    total_tax_paid = sum(total_carbon_tax, na.rm = TRUE)
-  ) %>%
-  mutate(
-    percent_contribution = 100 * total_tax_paid / total_revenue
-  )
-
-
-
-# Now we can run the analysis per quintile and type of energy 
-quintile_fuel_analysis <- carbon_tax_with_quintile %>%
-  group_by(quintile, articulo_label) %>%
-  summarise(
-    avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
-    avg_income_aft_tax = mean(),
-    avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE), #Average tax rate in %
-    count = n()  # Nb of households that use this source
-  )
+# Now we can run the analysis per quintile and type of energy (this code chunk wasnt working)
+# quintile_fuel_analysis <- carbon_tax_with_quintile %>%
+# group_by(quintile, articulo_label) %>%
+# summarise(
+# avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
+# avg_income_aft_tax = mean(),
+# avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE), #Average tax rate in %
+# count = n()  # Nb of households that use this source
+# )
 
 
 #Graph 1: How much the spend in energy before and after as a proportion of income by quintile
@@ -767,15 +777,15 @@ energy_exp_comparison <- quintile_analysis %>%
   )
 
 energy_exp_plot <- ggplot(
- energy_exp_comparison,
+  energy_exp_comparison,
   aes(x = factor(quintile), y = amount, fill = energy_exp)
 ) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(
-  values = c("avg_spent_ene_before" = "red", "avg_spent_ene_after" = "blue"),
-  labels = c("avg_spent_ene_before" = "Energy Expenditure Before Tax",
-             "avg_spent_ene_after" = "Energy Expenditure After Tax")
-) +
+    values = c("avg_spent_ene_before" = "red", "avg_spent_ene_after" = "blue"),
+    labels = c("avg_spent_ene_before" = "Energy Expenditure Before Tax",
+               "avg_spent_ene_after" = "Energy Expenditure After Tax")
+  ) +
   labs(
     title = "Differences in Energy Expenditure per Income Quintile",
     x = "Income Quintile",
@@ -788,16 +798,6 @@ print(energy_exp_plot)
 
 
 
-ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
-  labs(
-    title = "Share of Carbon Tax Revenue by Income Quintile",
-    x = "Income Quintile",
-    y = "Share of Total Revenue (%)"
-  ) +
-  theme_minimal()
-
-
 
 
 
@@ -823,7 +823,7 @@ ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contributio
 ###############################################################################################
 ###############################################################################################
 
-          ################## This part has not been changed  ######################
+################## This part has not been changed  ######################
 
 ###############################################################################################
 ###############################################################################################
@@ -889,6 +889,8 @@ energy_tax_plot <- ggplot(
 print(tax_burden_plot)
 print(income_plot)
 print(energy_tax_plot)
+
+
 
 ```
 

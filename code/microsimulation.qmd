@@ -272,13 +272,13 @@ income_plot_model1 <- ggplot(plot_data, aes(x = factor(quintile), y = value, fil
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(
     values = c("avg_total_income" = "steelblue", "avg_net_income" = "tomato2"),
-    labels = c("Ingreso Total", "Ingreso Neto")
+    labels = c("avg_total_income" = "Total Income", "avg_net_income" = "Net Income")
   ) +
   labs(
     title = "Effect of Carbon Tax on Household Income by Quintile",
     subtitle = "Comparison of average total vs. post-tax (net) income across income groups",
     x = "Income Quintile (from lowest to highest)",
-    y = "Average Monthly Income (in local currency)",  # adjust unit if needed
+    y = "Average Monthly Income (in local currency)",
     fill = ""
   ) +
   theme_minimal()
@@ -350,7 +350,7 @@ Since our household survey is from 2018, with data collected in 2017, we will us
 
 Among the energy sources used at the household level, only two fall under this taxation scheme: kerosene and the broad category “other liquid fossil fuels.” For these two, we have data on the quantities (in litres) consumed by each household.
 
-Accordingly, I will apply the average of the four quarterly taxes for 2018 to kerosene. For “other liquid fossil fuels,” I will construct an average tax based on the mean of the lump sums applied to all other relevant fuel types. All other energy sources will be considered untaxed under this simulation.
+Accordingly, we will apply the average of the four quarterly taxes for 2018 to kerosene. For “other liquid fossil fuels,” I will construct an average tax based on the mean of the lump sums applied to all other relevant fuel types. All other energy sources will be considered untaxed under this simulation.
 
 This approach is admittedly imperfect, as it does not account for the share of electricity generated from fossil fuels, notably, coal, which should, in principle, also be subject to carbon taxation. As we don't know the amounts of these energy sources used to generated that a given amount of electricity, we cannot include them in this model.
 
@@ -425,13 +425,13 @@ carbon_tax_with_quintile <- carbon_tax %>%
   )
 
 # Step 5: analyzing quintile tax expenditure 
-quintile_fuel_analysis <- carbon_tax_with_quintile %>%
-  group_by(quintile, articulo_label) %>%
-  summarise(
-    avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
-    avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  
-    count = n()  
-  )
+# quintile_fuel_analysis <- carbon_tax_with_quintile %>%
+#   group_by(quintile, articulo_label) %>%
+#   summarise(
+#     avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
+#     avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  
+#     count = n()  
+#   ) ###I DONT KNOW WHAT IS THIS AND DOESNT WORK (PRISCILA)
 
 ```
 
@@ -446,23 +446,20 @@ income_comparison <- quintile_analysis %>%
     values_to = "amount"
   )
 
-income_plot_model2 <- ggplot(
-  income_comparison,
-  aes(x = factor(quintile), y = amount, fill = income_type)
-) +
+income_plot_model2 <- ggplot(plot_data, aes(x = factor(quintile), y = value, fill = income_type)) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(
     values = c("avg_total_income" = "steelblue", "avg_net_income" = "tomato2"),
-    labels = c("Ingreso Total", "Ingreso Neto")
+    labels = c("avg_total_income" = "Total Income", "avg_net_income" = "Net Income")
   ) +
   labs(
     title = "Effect of Carbon Tax on Household Income by Quintile",
     subtitle = "Comparison of average total vs. post-tax (net) income across income groups",
     x = "Income Quintile (from lowest to highest)",
-    y = "Average Monthly Income (in local currency)",  # adjust unit if needed
+    y = "Average Monthly Income (in local currency)",
     fill = ""
   ) +
-  theme_minimal() 
+  theme_minimal()
 
 
 
@@ -762,13 +759,13 @@ carbon_tax_with_quintile <- carbon_tax %>%
   )
 
 # Step 5: analyzing quintile tax expenditure 
-quintile_fuel_analysis <- carbon_tax_with_quintile %>%
-  group_by(quintile, articulo_label) %>%
-  summarise(
-    avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
-    avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  
-    count = n()  
-  )
+# quintile_fuel_analysis <- carbon_tax_with_quintile %>%
+#   group_by(quintile, articulo_label) %>%
+#   summarise(
+#     avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
+#     avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  
+#     count = n()  
+#   )
 
 ```
 
@@ -784,28 +781,24 @@ income_comparison <- quintile_analysis %>%
     values_to = "amount"
   )
 
-income_plot_model2 <- ggplot(
-  income_comparison,
-  aes(x = factor(quintile), y = amount, fill = income_type)
-) +
+income_plot_model3 <- ggplot(plot_data, aes(x = factor(quintile), y = value, fill = income_type)) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(
     values = c("avg_total_income" = "steelblue", "avg_net_income" = "tomato2"),
-    labels = c("Ingreso Total", "Ingreso Neto")
+    labels = c("avg_total_income" = "Total Income", "avg_net_income" = "Net Income")
   ) +
   labs(
     title = "Effect of Carbon Tax on Household Income by Quintile",
     subtitle = "Comparison of average total vs. post-tax (net) income across income groups",
     x = "Income Quintile (from lowest to highest)",
-    y = "Average Monthly Income (in local currency)",  # adjust unit if needed
+    y = "Average Monthly Income (in local currency)",
     fill = ""
   ) +
-  theme_minimal() 
-
+  theme_minimal()
 
 
 # Relative Tax Burden
-tax_burden_plot_model2 <- ggplot(
+tax_burden_plot_model3 <- ggplot(
   quintile_analysis,
   aes(x = factor(quintile), y = avg_tax_burden)
 ) +
@@ -852,7 +845,7 @@ quintile_contributions <- household_tax %>%
     percent_contribution = 100 * total_tax_paid / total_revenue
   )
 
-carbon_tax_burden_model2 <- ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
+carbon_tax_burden_model3 <- ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
   geom_bar(stat = "identity", fill = "#5A3989") +
   labs(
  title = "Carbon Tax Burden by Income Quintile",
@@ -864,9 +857,9 @@ carbon_tax_burden_model2 <- ggplot(quintile_contributions, aes(x = factor(quinti
 
 
 # Show plots
-print(income_plot_model2)
-print(tax_burden_plot_model2)
-print(carbon_tax_burden_model2)
+print(income_plot_model3)
+print(tax_burden_plot_model3)
+print(carbon_tax_burden_model3)
 
 ```
 

@@ -29,7 +29,7 @@ To evaluate the distributional impact and policy design trade-offs of implementi
 
 ### Current Carbon Tax Landscape in Argentina
 
--   Since 2017, Argentina has implemented a carbon tax (Ley N° 23.966), but:
+-   Since 2017, Argentina has implemented a carbon tax (Law 23.966), but:
 
     -   It applies upstream (to fuel importers and producers) and not directly to households.
 
@@ -49,7 +49,7 @@ To evaluate the distributional impact and policy design trade-offs of implementi
 
 ## Microsimulation Model Structure
 
--   Use microdata from Argentina's national household expenditure survey (e.g., EPH, ENGHo) to estimate baseline household spending on energy sources
+-   Use microdata from Argentina's national household expenditure survey Encuesta Nacional de Gastos de los Hogares (ENGHo) to estimate baseline household spending on energy sources
 
 -   Apply carbon price increases to each energy source using the official carbon content conversion table (from Argentina's tax authority or IPCC guidelines).
 
@@ -63,7 +63,7 @@ To evaluate the distributional impact and policy design trade-offs of implementi
 
     -   A uniform price across all households.
 
-    -   A differential price structure based on income quintiles (e.g., lower rates for the poor).
+    -   A differential price structure based on income quintiles (e.g., lower rates for lower income households).
 
 ### Distributional Analysis
 
@@ -86,7 +86,7 @@ library(tidyverse)
 ```
 
 ```{r}
-#####  Household - WE USE THIS FOR HOUSEHOLD INCOME
+#####  Household 
 hh_2018 <- read_delim(here("data","engho2018_hogares.txt"),
   delim = "|",
   col_names = FALSE,
@@ -106,7 +106,7 @@ colnames(hh_2018) <- as.character(unlist(hh_2018[1, ]))
 hh_2018 <- hh_2018[-1, ]
 hh_2018 <- type.convert(hh_2018, as.is = TRUE)
 
-##### Expenditures - WE USE THIS FOR HOUSEHOLD EXPENDITURE IN ENERGY
+##### Expenditures 
 
 gastos <- read_delim((here("data",
                            "engho2018_gastos.txt")),
@@ -244,6 +244,7 @@ ggplot(df_house, aes(x = ingtoth)) +
 
 ```{r}
 fuel_quint <- df_detail %>%
+  filter(!is.na(income_quintile)) %>%  # I deleted NA column (priscila)
   group_by(income_quintile, articulo_label) %>%
   summarize(
     mean_spend = mean(monto),
@@ -263,6 +264,7 @@ ggplot(fuel_quint, aes(
     title = "Average Spend on Each Energy Type by Income Quintile"
   ) +
   theme_minimal()
+
 ```
 
 ### Income spent by energy type x income quintile (Facet)

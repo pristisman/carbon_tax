@@ -113,7 +113,7 @@ To evaluate the distributional impact and policy design trade-offs of implementi
 
 Carbon taxes are difficult to design, as they involve the complex task of putting a price on emissions and valuing different sources of carbon dioxide emissions differently. There are many ways to approach this, which is why carbon taxes are regulated in a variety of ways across countries. For the purposes of our microsimulation, we will consider three different carbon tax models, drawing primarily from two countries. We will take inspiration from the Argentinian model, as well as from Canada, which has implemented a more aggressive carbon tax system.
 
-In 2017, the Macri government introduced a carbon tax, layered on top of an existing tax on liquid fuels. The carbon tax consists of fixed lump sums per unit volume of each fuel, adjusted for inflation every quarter and varying according to the carbon dioxide (CO₂) emissions associated with each fossil fuel. The government planned a gradual increase in the tax rate, an annual[10% hike from 2019 to 2028](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf). As of 2023, the carbon price resulting from these increases corresponded to approximately USD 10 per ton of C[O₂ (USD 10/tCO₂](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf)). Tax rates are relatively low compared to the what is advised by the IMF, which sets the floor for middle-income countries at USD 50/tCO₂ ([source](https://www.cepal.org/en/publications/81239-economic-policy-and-climate-change-carbon-pricing-latin-america-and-caribbean)), but higher than in regional peers such as Chile, Colombia, and Mexico. The tax is applied upstream, targeting fuel importers and producers, rather than directly to households. Its design resembles that of a typical Pigouvian tax.
+In 2017, Macri's government introduced a carbon tax, layered on top of an existing tax on liquid fuels. The carbon tax consists of fixed lump sums per unit volume of each fuel, adjusted for inflation every quarter and varying according to the carbon dioxide (CO₂) emissions associated with each fossil fuel. The government planned a gradual increase in the tax rate, an annual[10% hike from 2019 to 2028](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf). As of 2023, the carbon price resulting from these increases corresponded to approximately USD 10 per ton of C[O₂ (USD 10/tCO₂](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf)). Tax rates are relatively low compared to the what is advised by the IMF, which sets the floor for middle-income countries at USD 50/tCO₂ ([source](https://www.cepal.org/en/publications/81239-economic-policy-and-climate-change-carbon-pricing-latin-america-and-caribbean)), but higher than in regional peers such as Chile, Colombia, and Mexico. The tax is applied upstream, targeting fuel importers and producers, rather than directly to households. Its design resembles that of a typical Pigouvian tax.
 
 On the other hand, Canada has a dual carbon pricing system, consisting of a federal fuel charge and a separate system for large industrial emitters. The federal fuel charge is applied to producers, importers, and distributors of fossil fuels, as well as other CO₂-emitting entities such [as air and marine carriers.](https://www.canada.ca/en/revenue-agency/services/tax/excise-taxes-duties-levies/fuel-charge/registration.html)Although the charge is levied upstream, it is often passed on to consumers.
 
@@ -139,7 +139,7 @@ Compared to Argentina, Canada enforces a higher and more uniform carbon price (a
 
 Our basic model will have the following characteristics:
 
--   Use microdata from Argentina's national household expenditure survey (e.g., EPH, ENGHo) to estimate baseline household spending on energy sources.
+-   Use microdata from Argentina's national household expenditure survey (Encuesta Nacional de Gastos de los Hogares, ENGHo) to estimate baseline household spending on energy sources.
 
 -   Apply carbon price increases to each energy source using the official carbon content conversion table (from Argentina's and Canada's tax authority).
 
@@ -151,7 +151,7 @@ As such we have created three basic model that try to emulate three different ca
 
 -   A second model that includes variation in tax rates depending on how pollutant the energy source used is.
 
--   A third microsimulation that attempts to mimic the Argentian carbon tax as it is regulated with lump sums instead of tax rates.
+-   A third microsimulation that attempts to mimic the Argentinean carbon tax as it is regulated with lump sums instead of tax rates.
 
 -   Canada?
 
@@ -193,11 +193,11 @@ First, we will include a simulation that includes different price levels, namely
 
     -   A uniform price across all households.
 
-    -   A differential price structure based on income quintiles (e.g., lower rates for the poor).
+    -   A differential price structure based on income quintiles (e.g., lower rates for lower income households).
 
 ##### Distributional Analysis
 
-Furthermore, we will evaluate the impact of carbon taxes as set forth on our three initial model on income distribution. In order to to that will first estimate the post-tax energy expenditures for each household, and then estimate the impact on the tax income and income distribution per income quintiles.
+Furthermore, we will evaluate the impact of carbon taxes as set forth on our three initial model on income distribution. In order to do that will first estimate the post-tax energy expenditures for each household, and then estimate the impact on the tax income and income distribution per income quintiles.
 
 We will evaluate then, in a second \*\*\*, evaluate revenue recycling mechanisms through cash transfers:
 
@@ -216,17 +216,17 @@ Will the carbon tax have different effects in different parts of Argentina, as t
 ```{r}
 #Suppose we add a 10% tax on the price paid by all households. What would be the final amount paid, the income effect and revenue effect?
 
-# Función para calcular el impuesto al carbono (10% sobre el monto de energía)
+# Build function to calculate carbon tax of 10%
 calculate_carbon_tax <- function(monto) {
   tax <- monto * 0.10
   return(tax)
 }
 
-# Aplicar la función a tu dataframe
+# Apply function to dataframe
 carbon_tax <- carbon_tax %>%
   mutate(
     carbon_tax = map_dbl(
-      .x = monto,
+      .x = monto, #apply the function to every value of the column "monto"
       .f = calculate_carbon_tax
     ),
     # Calcular el ingreso neto después del impuesto
@@ -237,17 +237,16 @@ carbon_tax <- carbon_tax %>%
 
 ```{r}
 
-# Partiendo del dataframe carbon_tax ya procesado con el impuesto aplicado
-# Calcular los deciles de ingreso
+# Calculate quintiles
 carbon_tax <- carbon_tax %>%
   # Creamos una variable de decil basada en el ingreso total
   mutate(
-    decile = ntile(ingtoth, 10)
+    quintile = ntile(ingtoth, 5)
   )
 
-# Calcular valores promedio por decil
-decile_averages <- carbon_tax %>%
-  group_by(decile) %>%
+# Avg values by quintile
+quintile_averages <- carbon_tax %>%
+  group_by(quintile) %>%
   summarise(
     avg_total_income = mean(ingtoth, na.rm = TRUE),
     avg_net_income = mean(net_income, na.rm = TRUE),
@@ -256,17 +255,17 @@ decile_averages <- carbon_tax %>%
     tax_percentage = mean(carbon_tax/ingtoth * 100, na.rm = TRUE)
   )
 
-# Convertir a formato largo para graficar
-plot_data <- decile_averages %>%
-  select(decile, avg_total_income, avg_net_income) %>%
+# Pivot long for plotting
+plot_data <- quintile_averages %>%
+  select(quintile, avg_total_income, avg_net_income) %>%
   pivot_longer(
     cols = c(avg_total_income, avg_net_income),
     names_to = "income_type",
     values_to = "value"
   )
 
-# How much the spend in energy before and after as a proportion of income by quintile
-income_plot <- ggplot(plot_data, aes(x = factor(decile), y = value, fill = income_type)) +
+# How much the spend in energy before and after as a proportion of income by quintile (i dont like this one)
+income_plot <- ggplot(plot_data, aes(x = factor(quintile), y = value, fill = income_type)) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(values = c("avg_total_income" = "blue", "avg_net_income" = "red"),
                     labels = c("Ingreso Total", "Ingreso Neto")) +
@@ -278,8 +277,8 @@ income_plot <- ggplot(plot_data, aes(x = factor(decile), y = value, fill = incom
   ) +
   theme_minimal()
 
-# Gráfico para ver la carga impositiva relativa
-tax_burden_plot <- ggplot(decile_averages, aes(x = factor(decile), y = tax_percentage)) +
+# Relative Tax Burden
+tax_burden_plot <- ggplot(quintile_averages, aes(x = factor(quintile), y = tax_percentage)) +
   geom_bar(stat = "identity", fill = "darkgreen") +
   labs(
     title = "Impuesto al carbono como porcentaje del ingreso por decil",
@@ -288,10 +287,35 @@ tax_burden_plot <- ggplot(decile_averages, aes(x = factor(decile), y = tax_perce
   ) +
   theme_minimal()
 
-# Mostrar los gráficos
+
+# Contribution to gov income revenue
+tax_by_quintile <- carbon_tax %>%
+  group_by(quintile) %>%
+  summarise(
+    total_tax = sum(carbon_tax, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    total_revenue = sum(total_tax),
+    tax_share = total_tax / total_revenue * 100  # proporción pagada por cada quintil
+  )
+
+tax_share_plot <- ggplot(tax_by_quintile, aes(x = factor(quintile), y = tax_share)) +
+  geom_bar(stat = "identity", fill = "purple") +
+  labs(
+    title = "Participación en la recaudación del impuesto al carbono por quintil",
+    x = "Quintil de ingreso",
+    y = "Porcentaje de la recaudación total (%)"
+  ) +
+  theme_minimal()
+
+
+
+
+
 print(income_plot)
 print(tax_burden_plot)
-
+print(tax_share_plot)
 ```
 
 ### Model II: Tax varies according to energy source, with more pollutant sources with higher taxes, and is consistent with lump sums established by the Argentinian Government.
@@ -327,7 +351,7 @@ As a result, a portion of households will remain untaxed in the model, even thou
 ```{r}
 
 
-# Función que aplica tasas de impuesto diferenciadas por tipo de artículo/energía
+# Build function to calculate differentiated carbon tax rates based on the energy source
 
   calculate_carbon_tax <- function(cantidad, articulo) {
  
@@ -370,15 +394,15 @@ household_tax <- carbon_tax %>%
     net_income = ingtoth - total_carbon_tax
   )
 
-# Step 3: Calculate deciles based on income
+# Step 3: Calculate quintiles based on income
 household_tax <- household_tax %>%
   mutate(
-    decile = ntile(ingtoth, 10)
+    quintile = ntile(ingtoth, 5)
   )
 
 # Step 4: Analyzing income
-decile_analysis <- household_tax %>%
-  group_by(decile) %>%
+quintile_analysis <- household_tax %>%
+  group_by(quintile) %>%
   summarise(
     avg_total_income = mean(ingtoth, na.rm = TRUE),
     avg_net_income = mean(net_income, na.rm = TRUE),
@@ -386,18 +410,15 @@ decile_analysis <- household_tax %>%
     avg_tax_burden = mean(total_carbon_tax/ingtoth * 100, na.rm = TRUE) 
   )
 
-# Paso 5: Análisis por decil y tipo de energía (uniendo con la información original)
-# Primero asegurarnos de tener el decil en el dataframe original
-carbon_tax_with_decile <- carbon_tax %>%
-  # Usamos left_join para añadir la columna decile desde household_tax
+carbon_tax_with_quintile <- carbon_tax %>%
   left_join(
-    household_tax %>% select(id, decile, total_carbon_tax), 
+    household_tax %>% select(id, quintile, total_carbon_tax), 
     by = "id"
   )
 
-# Ahora podemos hacer el análisis por decil y tipo de energía
-decile_fuel_analysis <- carbon_tax_with_decile %>%
-  group_by(decile, articulo_label) %>%
+# Step 5: analyzing quintile tax expenditure 
+quintile_fuel_analysis <- carbon_tax_with_quintile %>%
+  group_by(quintile, articulo_label) %>%
   summarise(
     avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
     avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE),  # Tasa promedio en porcentaje
@@ -408,8 +429,8 @@ decile_fuel_analysis <- carbon_tax_with_decile %>%
 
 # Gráfico 1: Impuesto como porcentaje del ingreso por decil
 tax_burden_plot <- ggplot(
-  decile_analysis,
-  aes(x = factor(decile), y = avg_tax_burden)
+  quintile_analysis,
+  aes(x = factor(quintile), y = avg_tax_burden)
 ) +
   geom_bar(stat = "identity", fill = "darkgreen") +
   labs(
@@ -420,8 +441,8 @@ tax_burden_plot <- ggplot(
   theme_minimal()
 
 # Gráfico 2: Comparación de ingreso antes y después de impuestos por decil
-income_comparison <- decile_analysis %>%
-  select(decile, avg_total_income, avg_net_income) %>%
+income_comparison <- quintile_analysis %>%
+  select(quintile, avg_total_income, avg_net_income) %>%
   pivot_longer(
     cols = c(avg_total_income, avg_net_income),
     names_to = "income_type",
@@ -430,7 +451,7 @@ income_comparison <- decile_analysis %>%
 
 income_plot <- ggplot(
   income_comparison,
-  aes(x = factor(decile), y = amount, fill = income_type)
+  aes(x = factor(quintile), y = amount, fill = income_type)
 ) +
   geom_bar(stat = "identity", position = position_dodge()) +
   scale_fill_manual(
@@ -443,11 +464,11 @@ income_plot <- ggplot(
     y = "Ingreso promedio",
     fill = ""
   ) +
-  theme_minimal()
+  theme_minimal() ###ESTE LO SACARIA
 
 # Gráfico 3: Tasa de impuesto promedio por fuente de energía
 energy_tax_plot <- ggplot(
-  decile_fuel_analysis %>% 
+  quintile_fuel_analysis %>% 
     group_by(articulo_label) %>%
     summarise(avg_rate = mean(avg_tax_rate, na.rm = TRUE)),
   aes(x = reorder(articulo_label, avg_rate), y = avg_rate, fill = articulo_label)
@@ -462,10 +483,37 @@ energy_tax_plot <- ggplot(
   theme_minimal() +
   theme(legend.position = "none")
 
+
+# Contribution to gov income revenue
+
+total_revenue <- sum(household_tax$total_carbon_tax, na.rm = TRUE)
+quintile_contributions <- household_tax %>%
+  group_by(quintile) %>%
+  summarise(
+    total_tax_paid = sum(total_carbon_tax, na.rm = TRUE)
+  ) %>%
+  mutate(
+    percent_contribution = 100 * total_tax_paid / total_revenue
+  )
+
+ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
+  geom_bar(stat = "identity", fill = "purple") +
+  labs(
+    title = "Carbon Tax Revenue Contribution by Income Quintile",
+    x = "Income Quintile",
+    y = "Share of Total Revenue (%)"
+  ) +
+  theme_minimal()
+
+
 # Mostrar los gráficos
 print(tax_burden_plot)
 print(income_plot)
 print(energy_tax_plot)
+
+
+
+
 
 
 extend this to be changed: 
@@ -546,9 +594,6 @@ Since not all of the energy sources mentioned above are included in this study, 
 As we did in the case of Argentina, we will calculate an average rate per category, corresponding to the mean of the fuel charge rates applied to the relevant energy source usually used by households. For example, the tax applicable to bottled gas will be equal to the average of the rates for Propane, Butane, and Pentanes Plus. Once we have the average rates, we will apply the conversions described above to obtain values that can be compared to Argentina’s 2018 rates.
 
 ```{r}
-
-
-
 #Creating fuel charge rates for the different categories of energy sources including in the data by averaging Canada's 2024-2025 fuel charges rates
 
 Canada_rates <- data.frame(
@@ -662,12 +707,29 @@ carbon_tax_with_quintile <- carbon_tax %>%
     by = "id"
   )
 
+
+# Step 6: Calculate Total Carbon Tax Revenue
+total_revenue <- sum(household_tax$total_carbon_tax, na.rm = TRUE)
+
+
+# Step 7: Step 7: Calculate Share of Revenue per Quintile
+quintile_contributions <- household_tax %>%
+  group_by(quintile) %>%
+  summarise(
+    total_tax_paid = sum(total_carbon_tax, na.rm = TRUE)
+  ) %>%
+  mutate(
+    percent_contribution = 100 * total_tax_paid / total_revenue
+  )
+
+
+
 # Now we can run the analysis per quintile and type of energy 
 quintile_fuel_analysis <- carbon_tax_with_quintile %>%
   group_by(quintile, articulo_label) %>%
   summarise(
     avg_carbon_tax = mean(carbon_tax_item, na.rm = TRUE),
-    avg_income_aft_tax = mean()
+    avg_income_aft_tax = mean(),
     avg_tax_rate = mean(tax_rate * 100, na.rm = TRUE), #Average tax rate in %
     count = n()  # Nb of households that use this source
   )
@@ -703,6 +765,16 @@ energy_exp_plot <- ggplot(
 
 print(energy_exp_plot)
 
+
+
+ggplot(quintile_contributions, aes(x = factor(quintile), y = percent_contribution)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(
+    title = "Share of Carbon Tax Revenue by Income Quintile",
+    x = "Income Quintile",
+    y = "Share of Total Revenue (%)"
+  ) +
+  theme_minimal()
 
 
 

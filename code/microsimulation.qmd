@@ -653,11 +653,13 @@ Canada_rate_per_Energy_source_in_survey <- Canada_rates%>%
 elasticity <- 0   # Change for different scenarios
 rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
+gas_increment <- 0 # Change ratio to increase / decrease tax on gas articles
+fossil_increment <- 0 # Change ratio to increase / decrease tax on fossil articles
 
 # Function that applies differentiated tax rates by type of item/energy
 calculate_carbon_tax <- function(cantidad, articulo, 
-                                 fossil = 0, #ratio of increment 
-                                 gas = 0) #ratio of increment 
+                                 fossil = fossil_increment, #ratio of increment 
+                                 gas = gas_increment) #ratio of increment 
 {
   # Tax rates based on type of energy
   tax_rates <- case_when(

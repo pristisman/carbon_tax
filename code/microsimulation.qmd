@@ -115,6 +115,7 @@ Carbon taxes are difficult to design, as they involve the complex task of puttin
 
 In 2017, Macri's government introduced a carbon tax, layered on top of an existing tax on liquid fuels. The carbon tax consists of fixed lump sums per unit volume of each fuel, adjusted for inflation every quarter and varying according to the carbon dioxide (CO₂) emissions associated with each fossil fuel. The government planned a gradual increase in the tax rate, an annual[10% hike from 2019 to 2028](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf). As of 2023, the carbon price resulting from these increases corresponded to approximately USD 10 per ton of C[O₂ (USD 10/tCO₂](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf)). Tax rates are relatively low compared to the what is advised by the IMF, which sets the floor for middle-income countries at USD 50/tCO₂ ([source](https://www.cepal.org/en/publications/81239-economic-policy-and-climate-change-carbon-pricing-latin-america-and-caribbean)), but higher than in regional peers such as Chile, Colombia, and Mexico. The tax is applied upstream, targeting fuel importers and producers, rather than directly to households. Its design resembles that of a typical Pigouvian tax.
 
+
 On the other hand, Canada has a dual carbon pricing system, consisting of a federal fuel charge and a separate system for large industrial emitters. The federal fuel charge is applied to producers, importers, and distributors of fossil fuels, as well as other CO₂-emitting entities such [as air and marine carriers.](https://www.canada.ca/en/revenue-agency/services/tax/excise-taxes-duties-levies/fuel-charge/registration.html)Although the charge is levied upstream, it is often passed on to consumers.
 
 As of [April 2025](https://www.canada.ca/en/environment-climate-change/services/climate-change/pricing-pollution-how-it-will-work/putting-price-on-carbon-pollution.html), the federal fuel charge has been discontinued, but its structure will inform the design of this microsimulation. Like Argentina, Canada sets specific charges [for specific fuel types](https://www.canada.ca/en/department-finance/news/2021/12/fuel-charge-rates-for-listed-provinces-and-territories-for-2023-to-2030.html). However, each province is allowed to implement a higher carbon price than the federal benchmark. Other countries, such as Mexico, also apply differentiated carbon taxes across regions.
@@ -208,6 +209,35 @@ We will evaluate then, in a second \*\*\*, evaluate revenue recycling mechanisms
 ##### Aaron's suggestion: Geography Analysis
 
 Will the carbon tax have different effects in different parts of Argentina, as the prevalence of different climates accross the country could influence the impact on household's energy consumption.
+
+
+#### Final prices of energy depends on subsidy and geographic location
+
+By 2017–2018—the latest available data and the year Argentina introduced a minor carbon tax—an energy subsidy system was in place based on household income and geographic location (province). Subsidies applied to both electricity and natural gas.
+
+Under the 2022 segmentation scheme, residential users were divided into three categories:
+
+- N1 (High income): Pay the full cost of energy.
+- N2 (Low income): Receive full subsidies (tarifa social).
+- N3 (Middle income): Receive partial subsidies with a consumption cap.
+
+How Final Energy Prices Are Determined
+Energy bills in Argentina reflect four main components:
+
+Energy generation price – set nationally and uniform across the country.
+Transmission costs – for transporting energy to distributors.
+Distribution costs (VAD) – set by local distributors and vary by province/municipality.
+Taxes – national, provincial, and municipal.
+Thus, the final price a household pays depends on:
+
+Income level and subsidy eligibility, and
+The specific distribution and tax rates set by their province or municipality.
+Electricity vs. Gas Regulation
+Electricity distribution is decentralized and regulated by provinces and municipalities, except in the Buenos Aires Metropolitan Area (AMBA), where it’s under national jurisdiction.
+Gas distribution remains under national regulation, managed by ENARGAS, with prices differentiated by service zones and subzones.
+While the generation cost is the same nationwide, the final bill varies significantly due to differences in local distribution charges (VAD) and regional tax burdens.
+
+
 
 ## Microsimulation
 
@@ -320,10 +350,47 @@ tax_share_plot_model1 <- ggplot(tax_by_quintile, aes(x = factor(quintile), y = t
   theme_minimal()
 
 
+## Geographic Analysis
+
+subregion_labels <- c(
+  "1A" = "CABA",
+  "1B" = "GBA",
+  "2A" = "Córdoba y La Pampa",
+  "2B" = "Santa Fe y Entre Ríos",
+  "2C" = "Buenos Aires (resto)",
+  "3A" = "Jujuy, Salta y Tucumán",
+  "3B" = "La Rioja, Catamarca y Santiago del Estero",
+  "4A" = "Misiones y Corrientes",
+  "4B" = "Chaco y Formosa",
+  "5"  = "Cuyo (San Juan, Mendoza y San Luis)",
+  "6A" = "Neuquén y Río Negro",
+  "6B" = "Chubut, Santa Cruz y Tierra del Fuego"
+)
+
+subregion_quintile <- carbon_tax %>%
+  group_by(subregion, quintile) %>%
+  summarise(
+    avg_tax_pct = mean(carbon_tax / ingtoth * 100, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+subregion_model1 <- ggplot(subregion_quintile, aes(x = factor(quintile), y = subregion, fill = avg_tax_pct)) +
+  geom_tile() +
+  scale_y_discrete(labels = subregion_labels) +
+  scale_fill_viridis_c() +
+  labs(title = "Carbon Tax Effect by Subregion and Income Quintile",
+       x = "Income Quintile",
+       y = "",
+       fill = "Carbon Tax as a Share of Income") +
+  theme_minimal()
+
+
 
 print(income_plot_model1)
 print(tax_burden_plot_model1)
 print(tax_share_plot_model1)
+print(subregion_model1)
+
 ```
 
 ### Model II: Tax varies according to energy source, with more pollutant sources with higher taxes, and is consistent with lump sums established by the Argentinian Government.
@@ -522,12 +589,44 @@ carbon_tax_burden_model2 <- ggplot(quintile_contributions, aes(x = factor(quinti
   ) +
   theme_minimal()
 
+#Geographic Analysis
+
+# Step 1: Bring subregion info to household level
+household_with_subregion <- carbon_tax %>%
+  select(id, subregion) %>%
+  distinct() %>%
+  left_join(household_tax, by = "id")
+
+# Step 2: Group by subregion and quintile
+subregion_quintile_model2 <- household_with_subregion %>%
+  group_by(subregion, quintile) %>%
+  summarise(
+    avg_tax_pct = mean(total_carbon_tax / ingtoth * 100, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Step 3: Plot
+subregion_model2 <- ggplot(subregion_quintile_model2, aes(x = factor(quintile), y = subregion, fill = avg_tax_pct)) +
+  geom_tile() +
+  scale_y_discrete(labels = subregion_labels) +
+  scale_fill_viridis_c() +
+  labs(
+    title = "Carbon Tax Effect by Subregion and Income Quintile",
+    x = "Income Quintile",
+    y = "",
+    fill = "Carbon Tax as a Share of Income"
+  ) +
+  theme_minimal()
+
+
+
+
 
 # Show plots
 print(income_plot_model2)
 print(tax_burden_plot_model2)
 print(carbon_tax_burden_model2)
-
+print(subregion_model2)
 
 
 

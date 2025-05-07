@@ -177,8 +177,7 @@ As such we have created three basic model that try to emulate three different ca
 
 -   A second model that attempts to mimic the Argentinean carbon tax as it is regulated with lump sums instead of tax rates, also with no behavioral response or rebates.
 
--   A third model that includes variation in tax rates depending on how pollutant the energy source used is mimicking the standards from Canada. In this third model we include variations in tax rates by energy type, behavioral response through elasticity, and the inclusion of different schemes of elaticities. 
-
+-   A third model that includes variation in tax rates depending on how pollutant the energy source used is mimicking the standards from Canada. In this third model we include variations in tax rates by energy type, behavioral response through elasticity, and the inclusion of different schemes of elaticities.
 
 #### Data Description
 
@@ -870,9 +869,9 @@ carbon_tax_with_quintile_III_A <- carbon_tax_III_A %>%
 
 ##### Outputs
 
+**Percent change in energy expenditure as a proportion of income**
+
 ```{r}
-#### OUTPUTS
-# 1. Percent change in energy expenditure as a proportion of income
 
 tax_burden_plot_model_III_A <- household_tax_III_A %>%
   group_by(quintile) %>%
@@ -897,8 +896,9 @@ tax_burden_plot_model_III_A <- household_tax_III_A %>%
 print(tax_burden_plot_model_III_A)
 ```
 
+**Contribution to gov income revenue**
+
 ```{r}
-# 2. Contribution to gov income revenue
 
 quintile_contributions_III_A <- household_tax_III_A %>%
   group_by(quintile) %>%
@@ -926,8 +926,10 @@ print(carbon_tax_burden_model_III_A)
 
 ```
 
+**Household percent change in net income after tax**
+
 ```{r}
-# 3 Household percent change in net income after tax
+
 
 net_income_model_III_A <- ggplot(quintile_contributions_III_A, aes(x = factor(quintile), y = percent_change_income)) +
   geom_bar(stat = "identity", fill = "#5A3989") +
@@ -944,8 +946,9 @@ print(net_income_model_III_A)
 
 ```
 
+**Geographic Analysis**
+
 ```{r}
-#Geographic Analysis
 
 # Step 1: Bring subregion info to household level
 household_with_subregion_III_A <- carbon_tax_III_A %>%
@@ -1126,9 +1129,9 @@ carbon_tax_with_quintile_III_B <- carbon_tax_III_B %>%
 
 ##### Outputs
 
+**Percent change increase in energy expenditure as a proportion of income**
+
 ```{r}
-#### OUTPUTS
-# 1. Percent change increase in energy expenditure as a proportion of income
 
 pctA <- household_tax_III_A %>%
   mutate(
@@ -1194,8 +1197,9 @@ print(energy_share_change_model_III_B)
 
 ```
 
+**Contribution to gov income revenue**
+
 ```{r}
-# 2. Contribution to gov income revenue
 
 quintile_contributions_III_A <- household_tax_III_A %>%
   group_by(quintile) %>%
@@ -1261,8 +1265,10 @@ carbon_tax_burden_model_III_B <- ggplot(
 print(carbon_tax_burden_model_III_B)
 ```
 
+**Household percent change in net income after tax**
+
 ```{r}
-# 3 Household percent change in net income after tax
+
 
 net_income_model_III_B <- ggplot(
     quintile_contributions_III_B,
@@ -1291,8 +1297,10 @@ print(net_income_model_III_B)
 
 ```
 
+**Geographic Analysis**
+
 ```{r}
-#Geographic Analysis
+
 
 # Step 1: Bring subregion info to household level
 household_with_subregion_III_B <- carbon_tax_III_B %>%
@@ -1473,9 +1481,10 @@ carbon_tax_with_quintile_III_C <- carbon_tax_III_C %>%
 
 ##### Outputs
 
+**Percent change increase in energy expenditure as a proportion of income**
+
 ```{r}
-#### OUTPUTS
-# 1. Percent change increase in energy expenditure as a proportion of income
+
 
 # Precompute the C‐series pct_change
 pctC <- household_tax_III_C %>%
@@ -1527,8 +1536,10 @@ print(energy_share_change_model_III_C)
 
 ```
 
+**Contribution to gov income revenue**
+
 ```{r}
-# 2. Contribution to gov income revenue
+
 
 # Summarise C 
 quintile_contributions_III_C <- household_tax_III_C %>%
@@ -1580,8 +1591,9 @@ carbon_tax_burden_model_III_C <- ggplot(
 print(carbon_tax_burden_model_III_C)
 ```
 
+**Household percent change in net income after tax**
+
 ```{r}
-# 3 Household percent change in net income after tax
 
 net_income_model_III_C <- ggplot(
     quintile_contributions_III_C,
@@ -1610,8 +1622,9 @@ print(net_income_model_III_C)
 
 ```
 
+**Geographic Analysis**
+
 ```{r}
-#Geographic Analysis
 
 # Step 1: Bring subregion info to household level
 household_with_subregion_III_C <- carbon_tax_III_C %>%
@@ -1792,9 +1805,9 @@ carbon_tax_with_quintile_III_D <- carbon_tax_III_D %>%
 
 ##### Outputs
 
+**Percent change increase in energy expenditure as a proportion of income**
+
 ```{r}
-#### OUTPUTS
-# 1. Percent change increase in energy expenditure as a proportion of income
 
 # Precompute the C‐series pct_change
 pctD <- household_tax_III_D %>%
@@ -1846,8 +1859,10 @@ print(energy_share_change_model_III_D)
 
 ```
 
+**Contribution to gov income revenue**
+
 ```{r}
-# 2. Contribution to gov income revenue
+
 
 # Summarise D 
 quintile_contributions_III_D <- household_tax_III_D %>%
@@ -1899,8 +1914,10 @@ carbon_tax_burden_model_III_D <- ggplot(
 print(carbon_tax_burden_model_III_D)
 ```
 
+**Household percent change in net income after tax**
+
 ```{r}
-# 3 Household percent change in net income after tax
+
 
 net_income_model_III_D <- ggplot(
     quintile_contributions_III_D,
@@ -1929,8 +1946,10 @@ print(net_income_model_III_D)
 
 ```
 
+**Geographic Analysis**
+
 ```{r}
-#Geographic Analysis
+
 
 # Step 1: Bring subregion info to household level
 household_with_subregion_III_D <- carbon_tax_III_D %>%
@@ -2111,9 +2130,9 @@ carbon_tax_with_quintile_III_E <- carbon_tax_III_E %>%
 
 ##### Outputs
 
+**Percent change increase in energy expenditure as a proportion of income**
+
 ```{r}
-#### OUTPUTS
-# 1. Percent change increase in energy expenditure as a proportion of income
 
 # Precompute the C‐series pct_change
 pctE <- household_tax_III_E %>%
@@ -2165,8 +2184,10 @@ print(energy_share_change_model_III_E)
 
 ```
 
+**Contribution to gov income revenue**
+
 ```{r}
-# 2. Contribution to gov income revenue
+
 
 # Summarise D 
 quintile_contributions_III_E <- household_tax_III_E %>%
@@ -2218,8 +2239,10 @@ carbon_tax_burden_model_III_E <- ggplot(
 print(carbon_tax_burden_model_III_E)
 ```
 
+**Household percent change in net income after tax**
+
 ```{r}
-# 3 Household percent change in net income after tax
+
 
 net_income_model_III_E <- ggplot(
     quintile_contributions_III_E,
@@ -2248,8 +2271,10 @@ print(net_income_model_III_E)
 
 ```
 
+**Geographic Analysis**
+
 ```{r}
-#Geographic Analysis
+
 
 # Step 1: Bring subregion info to household level
 household_with_subregion_III_E <- carbon_tax_III_E %>%
@@ -2280,5 +2305,92 @@ subregion_model_III_E <- ggplot(subregion_quintile_model_III_E, aes(x = factor(q
   theme_minimal()
 
 print(subregion_model_III_E)
+
+```
+
+#### Laffer curve
+
+This analysis simulates how total carbon tax revenue changes with increasing tax rates, using three demand elasticities: -0.9, -1.0, and -1.1. Tax increases range from 0% to 20,000%. For each tax level, demand is adjusted based on elasticity, and new revenues are calculated accordingly.
+
+The first graph shows that total revenue rises with higher taxes but at a slowing pace. Lower elasticity values (e.g., -0.9) result in higher revenue, as demand falls less sharply. The second graph, which shows the slope of the revenue curve, highlights that the revenue gain per unit of tax increase drops sharply after the initial stages. This suggests diminishing returns from further tax hikes, with revenue gains flattening at high tax levels.
+
+```{r}
+
+library(furrr)
+library(future)
+
+# Set up parallel processing 
+plan(multisession, workers = 7)
+
+# Define elasticities and tax multipliers
+elasticities <- c(-0.9, -1, -1.1)
+tax_multipliers <- seq(0, 200, by = 5)
+
+# Grid of combinations
+simulation_grid <- expand.grid(elasticity = elasticities, tax_multiplier = tax_multipliers)
+
+# Run simulations
+laffer_data <- simulation_grid %>%
+  mutate(
+    total_revenue = future_map2_dbl(elasticity, tax_multiplier, function(e_val, multiplier) {
+      
+      carbon_tax_temp <- carbon_tax %>%
+        mutate(
+          carbon_tax_item = map2_dbl(
+            cantidad, articulo,
+            ~ calculate_carbon_tax(.x, .y,
+                                   fossil = multiplier,
+                                   gas = multiplier,
+                                   wood = multiplier)
+          ),
+          price = monto / cantidad,
+          tax_per_unit = carbon_tax_item / cantidad,
+          tax_rate = tax_per_unit / price,
+    
+          cantidad2 = cantidad * (1 + tax_rate) ^ e_val,
+          price2 = price * (1 + tax_rate),
+          carbon_tax_item2 = cantidad2 * tax_per_unit
+        )
+      
+      # Total Revenue
+      carbon_tax_temp %>%
+        group_by(id) %>%
+        summarise(tax_paid = sum(carbon_tax_item2, na.rm = TRUE), .groups = "drop") %>%
+        summarise(total = sum(tax_paid, na.rm = TRUE)) %>%
+        pull(total)
+    })
+  )
+
+ggplot(laffer_data, aes(x = tax_multiplier * 100, y = total_revenue, color = factor(elasticity))) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Laffer Curve: Carbon Tax Revenue vs. Tax Increase (%)",
+    x = "Tax Increase (%)",
+    y = "Total Carbon Tax Revenue",
+    color = "Elasticity"
+  ) +
+  theme_minimal()
+
+
+laffer_slopes <- laffer_data %>%
+  arrange(elasticity, tax_multiplier) %>%
+  group_by(elasticity) %>%
+  mutate(
+    slope = c(NA, diff(total_revenue) / diff(tax_multiplier))
+  ) %>%
+  ungroup()
+
+ggplot(laffer_slopes, aes(x = tax_multiplier * 100, y = slope, color = factor(elasticity))) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Slope of Laffer Curve (Δ Revenue / Δ Tax)",
+    x = "Tax Increase (%)",
+    y = "Revenue Slope",
+    color = "Elasticity"
+  ) +
+  theme_minimal()
+
 
 ```

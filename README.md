@@ -27,9 +27,11 @@ The simulation includes three basic models:
 **1. Uniform Tax Model**
 A flat carbon price is applied uniformly across all households and energy sources.
 Assumes no behavioral response and includes no rebates.
+
 **2. Argentine Carbon Tax Emulation**
 Simulates the existing carbon tax in Argentina using lump-sum values per fuel type.
 Excludes behavioral responses and rebates.
+
 **3. Canadian-Style Tax with Behavioral Response and Rebates**
 Applies differentiated tax rates based on carbon intensity, following the Canadian approach.
 Incorporates:

@@ -11,6 +11,7 @@ editor_options:
   chunk_output_type: inline
 execute:
   warning: false
+bibliography: references.bib
 ---
 
 ```{r}
@@ -172,13 +173,12 @@ Our basic model will have the following characteristics:
 
 As such we have created three basic model that try to emulate three different carbon taxation systems:
 
--   A first model that simulates a uniform tax across all households.
+-   A first model that simulates a uniform tax across all households and no inclusion of behavioral response or rebates.
 
--   A second model that includes variation in tax rates depending on how pollutant the energy source used is.
+-   A second model that attempts to mimic the Argentinean carbon tax as it is regulated with lump sums instead of tax rates, also with no behavioral response or rebates.
 
--   A third microsimulation that attempts to mimic the Argentinean carbon tax as it is regulated with lump sums instead of tax rates.
+-   A third model that includes variation in tax rates depending on how pollutant the energy source used is mimicking the standards from Canada. In this third model we include variations in tax rates by energy type, behavioral response through elasticity, and the inclusion of different schemes of elaticities. 
 
--   Canada?
 
 #### Data Description
 
@@ -204,33 +204,27 @@ Our data includes spending per household, as well as quantity consumed per house
 
 #### Sensitivity Analysis
 
-Based on these three different models, a sensitiviy analysis will be carried that will include different scenarios.
+Building on the third model, we will perform a sensitivity analysis that tests multiple scenarios using alternative parameter values.
 
 ##### Elasticity Analysis
 
-Built in the based model: We will conduct a study on how increases in carbon prices affect household demand for different energy sources. To simulate demand elasticity, we will draw on the findings of \*\*\*\*\*\*\*. We will assume that demand elasticities vary across income quintiles, reflecting differing levels of price sensitivity.
+Built in the based model: We will conduct a study on how increases in carbon prices affect household demand for different energy sources. Drawing on the estimates reported by [@zabaloy2022] and choose different levels of elasticities ranging from -0.09 to -0.76. we will explore a range of price elasticities from –0.09 to –0.76. Their findings highlight Argentina’s fuel demand as highly price-inelastic—largely a consequence of long-standing price controls and subsidies, limited short-run substitutes, and behavioural lock-in, with vehicles and appliances calibrated to persistently cheap energy.
 
 ##### Different Carbon Price Levels
 
-First, we will include a simulation that includes different price levels, namely a gradual increase in rates to simulate the carbon taxation rates at the levels expected by the IMF
-
--   Simulate different carbon price levels (e.g., \$10, \$25, \$50/tCO2E) to compare distributional effects under:
-
-    -   A uniform price across all households.
-
-    -   A differential price structure based on income quintiles (e.g., lower rates for lower income households).
+We will apply different tax rates to different energy types.
 
 ##### Distributional Analysis
 
 Furthermore, we will evaluate the impact of carbon taxes as set forth on our three initial model on income distribution. In order to do that will first estimate the post-tax energy expenditures for each household, and then estimate the impact on the tax income and income distribution per income quintiles.
 
-We will evaluate then, in a second \*\*\*, evaluate revenue recycling mechanisms through cash transfers:
+We will evaluate revenue recycling mechanisms through cash transfers:
 
 -   Flat per capita rebate (uniform transfer to all)
--   Progressive rebate (Enhanced rebates for lower-income households, Higher transfers for rural areas (aligned with Canadian policy))
+-   Progressive rebate (Enhanced rebates for lower-income households.
 -   Compare net distributional impacts: tax paid minus rebate received.
 
-##### Aaron's suggestion: Geography Analysis
+##### Geography Analysis
 
 Will the carbon tax have different effects in different parts of Argentina, as the prevalence of different climates accross the country could influence the impact on household's energy consumption.
 
@@ -732,7 +726,7 @@ Canada_rate_per_Energy_source_in_survey <- Canada_rates%>%
 
 #### Scenario A
 
-Model A is our pure “status-quo” benchmark: it applies Argentina’s existing carbon levies exactly as they stand—no additional surcharges, no rebates, and no allowance for behavioral response (ε = 0). By holding all tax‐rate increments at zero and assuming perfectly inelastic demand, Model A isolates the mechanical effect of the current tax schedule on household spending shares without any adjustment in consumption or revenue recycling. 
+Model A is our pure “status-quo” benchmark: it applies Argentina’s existing carbon levies exactly as they stand—no additional surcharges, no rebates, and no allowance for behavioral response (ε = 0). By holding all tax‐rate increments at zero and assuming perfectly inelastic demand, Model A isolates the mechanical effect of the current tax schedule on household spending shares without any adjustment in consumption or revenue recycling.
 
 ##### Model
 
@@ -851,7 +845,6 @@ household_tax_III_A <- household_tax_III_A %>%
     net_income3 = net_income2 + rebate  # updated post-rebate income
   )
 ```
-
 
 ```{r}
 # Step 4: Analyzing income
@@ -986,10 +979,9 @@ print(subregion_model_III_A)
 
 ```
 
-
 #### Scenario B
 
-By imposing a 50% surcharge on fossil fuels, the dirtiest energy sources, kerosene and coal, are hit hardest, while a modest 10% levy on gas only gently nudges users toward cleaner fuel. With a relatively high elasticity (ε = –0.15), this mix generates strong consumption shifts away from taxed fuels and toward subsidized or cleaner alternatives. By forgoing any rebates, the policy keeps the spotlight squarely on pure price signals to drive behavioral change and technology adoption. 
+By imposing a 50% surcharge on fossil fuels, the dirtiest energy sources, kerosene and coal, are hit hardest, while a modest 10% levy on gas only gently nudges users toward cleaner fuel. With a relatively high elasticity (ε = –0.15), this mix generates strong consumption shifts away from taxed fuels and toward subsidized or cleaner alternatives. By forgoing any rebates, the policy keeps the spotlight squarely on pure price signals to drive behavioral change and technology adoption.
 
 ##### Model
 
@@ -1110,7 +1102,6 @@ household_tax_III_B <- household_tax_III_B %>%
   )
 ```
 
-
 ```{r}
 # Step 4: Analyzing income
 quintile_analysis_III_B <- household_tax_III_B %>%
@@ -1202,7 +1193,6 @@ energy_share_change_model_III_B <- ggplot(
 print(energy_share_change_model_III_B)
 
 ```
-
 
 ```{r}
 # 2. Contribution to gov income revenue
@@ -1338,7 +1328,7 @@ print(subregion_model_III_B)
 
 #### Scenario C
 
-By doubling the fossil‐fuel tax (a 100% surcharge), we send a clear signal to curb the use of the dirtiest fuels—especially kerosene and heavy oils common in small‐scale industry and heating—while a modest 10% gas levy keeps essential cooking fuel affordable for households. With no rebates, we isolate the pure price‐signal effect, maximizing revenue (which can be channeled into clean‐energy investment) and driving significant shifts away from taxed fuels. 
+By doubling the fossil‐fuel tax (a 100% surcharge), we send a clear signal to curb the use of the dirtiest fuels—especially kerosene and heavy oils common in small‐scale industry and heating—while a modest 10% gas levy keeps essential cooking fuel affordable for households. With no rebates, we isolate the pure price‐signal effect, maximizing revenue (which can be channeled into clean‐energy investment) and driving significant shifts away from taxed fuels.
 
 ##### Model
 
@@ -1459,7 +1449,6 @@ household_tax_III_C <- household_tax_III_C %>%
   )
 ```
 
-
 ```{r}
 # Step 4: Analyzing income
 quintile_analysis_III_C <- household_tax_III_C %>%
@@ -1537,7 +1526,6 @@ energy_share_change_model_III_C <- ggplot(
 print(energy_share_change_model_III_C)
 
 ```
-
 
 ```{r}
 # 2. Contribution to gov income revenue
@@ -1780,7 +1768,6 @@ household_tax_III_D <- household_tax_III_D %>%
   )
 ```
 
-
 ```{r}
 # Step 4: Analyzing income
 quintile_analysis_III_D <- household_tax_III_D %>%
@@ -1858,7 +1845,6 @@ energy_share_change_model_III_D <- ggplot(
 print(energy_share_change_model_III_D)
 
 ```
-
 
 ```{r}
 # 2. Contribution to gov income revenue
@@ -1980,7 +1966,7 @@ print(subregion_model_III_D)
 
 #### Scenario E
 
-A bolder tax increase (+30%) across all polluting fuels to drive stronger carbon cuts, paired with a large targeted rebate (40% of revenues) for the poorest 40% to protect equity. The higher elasticity amplifies both emission reductions and welfare protections. 
+A bolder tax increase (+30%) across all polluting fuels to drive stronger carbon cuts, paired with a large targeted rebate (40% of revenues) for the poorest 40% to protect equity. The higher elasticity amplifies both emission reductions and welfare protections.
 
 ##### Model
 
@@ -2101,7 +2087,6 @@ household_tax_III_E <- household_tax_III_E %>%
   )
 ```
 
-
 ```{r}
 # Step 4: Analyzing income
 quintile_analysis_III_E <- household_tax_III_E %>%
@@ -2179,7 +2164,6 @@ energy_share_change_model_III_E <- ggplot(
 print(energy_share_change_model_III_E)
 
 ```
-
 
 ```{r}
 # 2. Contribution to gov income revenue
@@ -2298,11 +2282,3 @@ subregion_model_III_E <- ggplot(subregion_quintile_model_III_E, aes(x = factor(q
 print(subregion_model_III_E)
 
 ```
-
-
-
-
-
-
-
-

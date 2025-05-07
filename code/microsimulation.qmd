@@ -102,6 +102,24 @@ carbon_tax <- energy_exp %>%
 
 ```
 
+```{r}
+
+subregion_labels <- c(
+  "1A" = "CABA",
+  "1B" = "GBA",
+  "2A" = "Córdoba y La Pampa",
+  "2B" = "Santa Fe y Entre Ríos",
+  "2C" = "Buenos Aires (resto)",
+  "3A" = "Jujuy, Salta y Tucumán",
+  "3B" = "La Rioja, Catamarca y Santiago del Estero",
+  "4A" = "Misiones y Corrientes",
+  "4B" = "Chaco y Formosa",
+  "5"  = "Cuyo (San Juan, Mendoza y San Luis)",
+  "6A" = "Neuquén y Río Negro",
+  "6B" = "Chubut, Santa Cruz y Tierra del Fuego"
+)
+```
+
 ## Introduction
 
 #### Motivation
@@ -236,6 +254,8 @@ Income level and subsidy eligibility, and The specific distribution and tax rate
 
 ### Model I: A uniform tax across all households
 
+#### Model
+
 ```{r}
 #Suppose we add a 10% tax on the price paid by all households. What would be the final amount paid, the income effect and revenue effect?
 
@@ -286,6 +306,8 @@ plot_data <- quintile_averages %>%
   )
 ```
 
+#### Output
+
 ```{r}
 ### OUTPUTS
 
@@ -306,7 +328,10 @@ income_plot_model1 <- ggplot(plot_data, aes(x = factor(quintile), y = value, fil
   ) +
   theme_minimal()
 
+print(income_plot_model1)
+```
 
+```{r}
 # Relative Tax Burden
 tax_burden_plot_model1 <- ggplot(quintile_averages, aes(x = factor(quintile), y = tax_percentage)) +
   geom_bar(stat = "identity", fill = "darkgreen") +
@@ -318,7 +343,10 @@ tax_burden_plot_model1 <- ggplot(quintile_averages, aes(x = factor(quintile), y 
   ) +
   theme_minimal()
 
+print(tax_burden_plot_model1)
+```
 
+```{r}
 #Revenue collected by the government
 tax_by_quintile <- carbon_tax_I %>%
   group_by(quintile) %>%
@@ -342,23 +370,11 @@ tax_share_plot_model1 <- ggplot(tax_by_quintile, aes(x = factor(quintile), y = t
   ) +
   theme_minimal()
 
+print(tax_share_plot_model1)
+```
 
+```{r}
 ## Geographic Analysis
-
-subregion_labels <- c(
-  "1A" = "CABA",
-  "1B" = "GBA",
-  "2A" = "Córdoba y La Pampa",
-  "2B" = "Santa Fe y Entre Ríos",
-  "2C" = "Buenos Aires (resto)",
-  "3A" = "Jujuy, Salta y Tucumán",
-  "3B" = "La Rioja, Catamarca y Santiago del Estero",
-  "4A" = "Misiones y Corrientes",
-  "4B" = "Chaco y Formosa",
-  "5"  = "Cuyo (San Juan, Mendoza y San Luis)",
-  "6A" = "Neuquén y Río Negro",
-  "6B" = "Chubut, Santa Cruz y Tierra del Fuego"
-)
 
 subregion_quintile <- carbon_tax_I %>%
   group_by(subregion, quintile) %>%
@@ -377,11 +393,6 @@ subregion_model1 <- ggplot(subregion_quintile, aes(x = factor(quintile), y = sub
        fill = "Carbon Tax as a Share of Income") +
   theme_minimal()
 
-
-
-print(income_plot_model1)
-print(tax_burden_plot_model1)
-print(tax_share_plot_model1)
 print(subregion_model1)
 
 ```
@@ -416,6 +427,8 @@ This approach is admittedly imperfect, as it does not account for the share of e
 
 As a result, a portion of households will remain untaxed in the model, even though their actual energy consumption would indirectly fall under the carbon tax in real life.
 
+#### Model
+
 ```{r}
 # Build function to calculate differentiated carbon tax rates based on the energy source
 
@@ -436,7 +449,9 @@ As a result, a portion of households will remain untaxed in the model, even thou
   tax <- cantidad * lump_sums
   return(tax)
 }
+```
 
+```{r}
 # Step 1: calculate tax by energy type
 carbon_tax_II <- carbon_tax %>%
   mutate(
@@ -445,10 +460,17 @@ carbon_tax_II <- carbon_tax %>%
       .y = articulo,
       .f = calculate_carbon_tax
     ),
+    # original price paid
+    price = monto/cantidad,
+    # per unit markup after tax
+    tax_per_unit = carbon_tax_item/cantidad,
     # Effective tax rate
-    tax_rate = carbon_tax_item / monto
+    tax_rate = tax_per_unit / price
   )
 
+```
+
+```{r}
 # Step 2: Total tax paid by household
 household_tax_II <- carbon_tax_II %>%
   group_by(id) %>%
@@ -460,12 +482,18 @@ household_tax_II <- carbon_tax_II %>%
     net_income = ingtoth - total_carbon_tax
   )
 
+```
+
+```{r}
 # Step 3: Calculate quintiles based on income
 household_tax_II <- household_tax_II %>%
   mutate(
     quintile = ntile(ingtoth, 5)
   )
 
+```
+
+```{r}
 # Step 4: Analyzing income
 quintile_analysis_II <- household_tax_II %>%
   group_by(quintile) %>%
@@ -483,6 +511,8 @@ carbon_tax_with_quintile_II <- carbon_tax_II %>%
   )
 
 ```
+
+#### Output
 
 ```{r}
 #### OUTPUTS
@@ -510,8 +540,11 @@ income_plot_model2 <- ggplot(income_comparison, aes(x = factor(quintile), y = am
   ) +
   theme_minimal()
 
+print(income_plot_model2)
 
+```
 
+```{r}
 # Relative Tax Burden
 tax_burden_plot_model2 <- ggplot(
   quintile_analysis_II,
@@ -526,11 +559,11 @@ tax_burden_plot_model2 <- ggplot(
   ) +
   theme_minimal()
 
+print(tax_burden_plot_model2)
+```
+
+```{r}
 # Contribution to gov income revenue
-
-#Revenue collected by the government
-
-
 total_revenue_II <- sum(household_tax_II$total_carbon_tax, na.rm = TRUE)
 
 quintile_contributions_II <- household_tax_II %>%
@@ -552,6 +585,10 @@ carbon_tax_burden_model2 <- ggplot(quintile_contributions_II, aes(x = factor(qui
   ) +
   theme_minimal()
 
+print(carbon_tax_burden_model2)
+```
+
+```{r}
 #Geographic Analysis
 
 # Step 1: Bring subregion info to household level
@@ -581,16 +618,7 @@ subregion_model2 <- ggplot(subregion_quintile_model2, aes(x = factor(quintile), 
   ) +
   theme_minimal()
 
-
-
-
-
-# Show plots
-print(income_plot_model2)
-print(tax_burden_plot_model2)
-print(carbon_tax_burden_model2)
 print(subregion_model2)
-
 ```
 
 ### Model III: Tax varies according to energy source, with more pollutant sources with higher taxes, following the Canadian Model
@@ -765,15 +793,18 @@ carbon_tax_III_A <- carbon_tax %>%
       .y = articulo,
       .f = calculate_carbon_tax 
     ),
+    #original price paid
+    price = monto/cantidad,
+    #per unit markup after tax
+    tax_per_unit = carbon_tax_item/cantidad,
     # Effective tax rate
-    tax_rate = carbon_tax_item / monto,
+    tax_rate = tax_per_unit / price,
     
     # Apply elasticity adjustment to quantity 
     cantidad2 = cantidad * (1 + tax_rate) ^ elasticity,
-    price = monto/cantidad,
     price2 = price * (1 + tax_rate),
     monto2 = cantidad2 * price2,
-    carbon_tax_item2 = monto2 * tax_rate 
+    carbon_tax_item2 = cantidad2 * tax_per_unit
   )
 ```
 
@@ -829,17 +860,11 @@ quintile_analysis_III_A <- household_tax_III_A %>%
   summarise(
     avg_total_income = mean(ingtoth, na.rm = TRUE),
     avg_net_income = mean(net_income, na.rm = TRUE),
+    avg_net_income2 = mean(net_income3, na.rm = TRUE),
     avg_tax = mean(total_carbon_tax, na.rm = TRUE),
-    avg_tax_burden = mean(total_carbon_tax/ingtoth * 100, na.rm = TRUE) 
-  )
-
-quintile_analysis_III_A <- household_tax_III_A %>%
-  group_by(quintile) %>%
-  summarise(
-    avg_total_income = mean(ingtoth, na.rm = TRUE),
-    avg_net_income2 = mean(net_income2, na.rm = TRUE),
     avg_tax2 = mean(total_carbon_tax2, na.rm = TRUE),
-    avg_tax_burden2 = mean(total_carbon_tax2/ingtoth * 100, na.rm = TRUE) 
+    avg_tax_burden = mean(total_carbon_tax/ingtoth * 100, na.rm = TRUE),
+    avg_tax_burden2 = mean(total_carbon_tax2/ingtoth * 100, na.rm = TRUE)
   )
 
 carbon_tax_with_quintile_III_A <- carbon_tax_III_A %>%
@@ -885,12 +910,12 @@ print(tax_burden_plot_model_III_A)
 quintile_contributions_III_A <- household_tax_III_A %>%
   group_by(quintile) %>%
   summarise(
-    total_tax_paid = sum(total_carbon_tax, na.rm = TRUE),
+    total_tax_paid = sum(total_carbon_tax2, na.rm = TRUE),
     total_income = sum(ingtoth),
-    total_net_income = sum(net_income)
+    total_net_income = sum(net_income3)
   ) %>%
   mutate(
-    percent_contribution = 100 * total_tax_paid / total_revenue_III_A,
+    percent_contribution = 100 * (total_tax_paid / total_revenue_III_A2),
     percent_change_income = 100 * ((total_net_income-total_income)/total_income)
   )
 
@@ -938,8 +963,9 @@ household_with_subregion_III_A <- carbon_tax_III_A %>%
 # Step 2: Group by subregion and quintile
 subregion_quintile_model_III_A <- household_with_subregion_III_A %>%
   group_by(subregion, quintile) %>%
+  filter(ingtoth > 0) %>%
   summarise(
-    avg_tax_pct = mean(total_carbon_tax / ingtoth * 100, na.rm = TRUE),
+    avg_tax_pct = mean((total_carbon_tax2 / ingtoth) * 100, na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -1024,15 +1050,18 @@ carbon_tax_III_B <- carbon_tax %>%
       .y = articulo,
       .f = calculate_carbon_tax 
     ),
+    #original price paid
+    price = monto/cantidad,
+    #per unit markup after tax
+    tax_per_unit = carbon_tax_item/cantidad,
     # Effective tax rate
-    tax_rate = carbon_tax_item / monto,
+    tax_rate = tax_per_unit / price,
     
     # Apply elasticity adjustment to quantity 
     cantidad2 = cantidad * (1 + tax_rate) ^ elasticity,
-    price = monto/cantidad,
     price2 = price * (1 + tax_rate),
     monto2 = cantidad2 * price2,
-    carbon_tax_item2 = monto2 * tax_rate 
+    carbon_tax_item2 = cantidad2 * tax_per_unit
   )
 ```
 
@@ -1065,8 +1094,8 @@ household_tax_III_B <- household_tax_III_B %>%
 
 total_revenue_III_B <- sum(household_tax_III_B$total_carbon_tax, na.rm = TRUE)
 total_revenue_III_B2 <- sum(household_tax_III_B$total_carbon_tax2, na.rm = TRUE)
-rebate_pool_III_B <- total_revenue_III_B * rebate_share
-net_revenue_III_B <- total_revenue_III_B - rebate_pool_III_B
+rebate_pool_III_B <- total_revenue_III_B2 * rebate_share
+net_revenue_III_B <- total_revenue_III_B2 - rebate_pool_III_B
 
 household_tax_III_B <- household_tax_III_B %>%
   mutate(
@@ -1089,22 +1118,16 @@ quintile_analysis_III_B <- household_tax_III_B %>%
   summarise(
     avg_total_income = mean(ingtoth, na.rm = TRUE),
     avg_net_income = mean(net_income, na.rm = TRUE),
+    avg_net_income2 = mean(net_income3, na.rm = TRUE),
     avg_tax = mean(total_carbon_tax, na.rm = TRUE),
-    avg_tax_burden = mean(total_carbon_tax/ingtoth * 100, na.rm = TRUE) 
-  )
-
-quintile_analysis_III_B <- household_tax_III_B %>%
-  group_by(quintile) %>%
-  summarise(
-    avg_total_income = mean(ingtoth, na.rm = TRUE),
-    avg_net_income2 = mean(net_income2, na.rm = TRUE),
     avg_tax2 = mean(total_carbon_tax2, na.rm = TRUE),
-    avg_tax_burden2 = mean(total_carbon_tax2/ingtoth * 100, na.rm = TRUE) 
+    avg_tax_burden = mean(total_carbon_tax/ingtoth * 100, na.rm = TRUE),
+    avg_tax_burden2 = mean(total_carbon_tax2/ingtoth * 100, na.rm = TRUE)
   )
 
 carbon_tax_with_quintile_III_B <- carbon_tax_III_B %>%
   left_join(
-    household_tax_III_B %>% select(id, quintile, total_carbon_tax), 
+    household_tax_III_A %>% select(id, quintile, total_carbon_tax), 
     by = "id"
   )
 
@@ -1145,34 +1168,38 @@ pctB <- household_tax_III_B %>%
     pp_change = (share_after - share_before)
   )
 
-# 3. Plot them both, side‐by‐side
-ggplot() +
-  # A-series in green
-  geom_bar(
-    data = pctA,
-    aes(x = factor(quintile), y = pct_change),
-    stat = "identity",
-    fill = "darkgreen",
-    width = 0.4,
-    position = position_nudge(x = -0.2)
+pct_change_III_B <- bind_rows(
+  pctA %>% mutate(model = "A"),
+  pctB %>% mutate(model = "B")
+)
+
+energy_share_change_model_III_B <- ggplot(
+    pct_change_III_B,
+    aes(
+      x    = factor(quintile),
+      y    = pct_change,
+      fill = model
+    )
   ) +
-  # B-series in blue
   geom_bar(
-    data = pctB,
-    aes(x = factor(quintile), y = pct_change),
-    stat = "identity",
-    fill = "steelblue",
-    width = 0.4,
-    position = position_nudge(x = +0.2)
+    stat     = "identity",
+    position = position_dodge(width = 0.7),
+    width    = 0.6
+  ) +
+  scale_fill_manual(
+    values = c(A = "darkgreen", B = "steelblue"),
+    name   = "Model"
   ) +
   labs(
-    title    = "Percent Change in Energy Spending Share by Quintile",
-    subtitle = "Model A (green) vs. Model B (blue)",
+    title    = "Change in Energy Spending Share by Income Quintile",
+    subtitle = "Percentage change of energy expenditure as a proportion of income, by model",
     x        = "Income Quintile (from lowest to highest)",
     y        = "Change (%)"
   ) +
   scale_x_discrete(labels = as.character(1:5)) +
   theme_minimal()
+
+print(energy_share_change_model_III_B)
 
 ```
 
@@ -1183,12 +1210,12 @@ ggplot() +
 quintile_contributions_III_A <- household_tax_III_A %>%
   group_by(quintile) %>%
   summarise(
-    total_tax_paid    = sum(total_carbon_tax, na.rm = TRUE),
+    total_tax_paid    = sum(total_carbon_tax2, na.rm = TRUE),
     total_income      = sum(ingtoth, na.rm = TRUE),
     total_net_income  = sum(net_income3, na.rm = TRUE)
   ) %>%
   mutate(
-    percent_contribution    = 100 * total_tax_paid/ total_revenue_III_B,
+    percent_contribution    = 100 * total_tax_paid/ total_revenue_III_A2,
     percent_change_income   = 100 * ((total_net_income - total_income) / total_income),
     model = "A"
   ) %>%
@@ -1198,61 +1225,79 @@ quintile_contributions_III_A <- household_tax_III_A %>%
 quintile_contributions_III_B <- household_tax_III_B %>%
   group_by(quintile) %>%
   summarise(
-    total_tax_paid    = sum(total_carbon_tax, na.rm = TRUE),
+    total_tax_paid    = sum(total_carbon_tax2, na.rm = TRUE),
     total_income      = sum(ingtoth, na.rm = TRUE),
-    total_net_income  = sum(net_income3, na.rm = TRUE)
+    total_net_income  = sum(net_income3, na.rm = TRUE),
+    total_rebate      = sum(rebate, na.rm = TRUE)
   ) %>%
   mutate(
-    percent_contribution    = 100 * ((total_tax_paid - rebate_pool_III_B)  / net_revenue_III_B),
+    percent_contribution    = 100 * ((total_tax_paid - total_rebate)  / net_revenue_III_B),
     percent_change_income   = 100 * ((total_net_income - total_income) / total_income),
     model = "B"
   ) %>%
   select(quintile, percent_contribution, percent_change_income, model)
 
-ggplot() +
-  # A-series in green
-  geom_bar(
-    data = quintile_contributions_III_A,
-    aes(x = factor(quintile), y = percent_contribution),
-    stat = "identity",
-    fill = "darkgreen",
-    width = 0.4,
-    position = position_nudge(x = -0.2)
+quintile_contributions_III_B <- bind_rows(
+  quintile_contributions_III_A,
+  quintile_contributions_III_B
+)
+
+carbon_tax_burden_model_III <- ggplot(
+    quintile_contributions_III_B,
+    aes(
+      x    = factor(quintile),
+      y    = percent_contribution,
+      fill = model
+    )
   ) +
-  # B-series in blue
   geom_bar(
-    data = quintile_contributions_III_B,
-    aes(x = factor(quintile), y = percent_contribution),
-    stat = "identity",
-    fill = "steelblue",
-    width = 0.4,
-    position = position_nudge(x = +0.2)
+    stat     = "identity",
+    position = position_dodge(width = 0.7),
+    width    = 0.6
+  ) +
+  scale_fill_manual(
+    values = c(A = "darkgreen", B = "steelblue"),
+    name   = "Model"
   ) +
   labs(
     title    = "Carbon Tax Burden by Income Quintile",
-    subtitle = "Model A (green) vs. Model B (blue)",
+    subtitle = "Share of total carbon tax revenue contributed, by model",
     x        = "Income Quintile (from lowest to highest)",
     y        = "Share of Total Carbon Tax Revenue (%)"
   ) +
   scale_x_discrete(labels = as.character(1:5)) +
   theme_minimal()
+
+print(carbon_tax_burden_model_III)
 ```
 
 ```{r}
 # 3 Household percent change in net income after tax
 
-net_income_model_III_B <- ggplot(quintile_contributions_III_B, aes(x = factor(quintile), y = percent_change_income)) +
-  geom_bar(stat = "identity", fill = "#5A3989") +
+net_income_model_III_B <- ggplot(
+    quintile_contributions_III_B,
+    aes(x = factor(quintile),
+        y = percent_change_income,
+        fill = model)
+  ) +
+  geom_bar(
+    stat = "identity",
+    position = position_dodge(width = 0.7),
+    width = 0.6
+  ) +
   labs(
- title = "Household's net income percent change after tax",
-    subtitle = "Change in net income by each income group",
-    x = "Income Quintile (from lowest to highest)",
-    y = "Percent change in net revenue (%)"
+    title    = "Household’s Net Income Change After Tax by Income Quintile",
+    subtitle = "Percentage change in net income, by model",
+    x        = "Income Quintile (from lowest to highest)",
+    y        = "Percent Change in Net Income (%)",
+    fill     = "Model"
+  ) +
+  scale_fill_manual(
+    values = c(A = "darkgreen", B = "steelblue")
   ) +
   theme_minimal()
 
 print(net_income_model_III_B)
-
 
 ```
 
@@ -1260,33 +1305,34 @@ print(net_income_model_III_B)
 #Geographic Analysis
 
 # Step 1: Bring subregion info to household level
-household_with_subregion_III_A <- carbon_tax_III_A %>%
+household_with_subregion_III_B <- carbon_tax_III_B %>%
   select(id, subregion) %>%
   distinct() %>%
-  left_join(household_tax_III_A, by = "id")
+  left_join(household_tax_III_B, by = "id")
 
 # Step 2: Group by subregion and quintile
-subregion_quintile_model_III_A <- household_with_subregion_III_A %>%
+subregion_quintile_model_III_B <- household_with_subregion_III_B %>%
   group_by(subregion, quintile) %>%
+  filter(ingtoth > 0) %>%
   summarise(
-    avg_tax_pct = mean(total_carbon_tax / ingtoth * 100, na.rm = TRUE),
+    avg_tax_pct = mean((total_carbon_tax2 / ingtoth) * 100, na.rm = TRUE),
     .groups = "drop"
   )
 
 # Step 3: Plot
-subregion_model_III_A <- ggplot(subregion_quintile_model_III_A, aes(x = factor(quintile), y = subregion, fill = avg_tax_pct)) +
+subregion_model_III_B <- ggplot(subregion_quintile_model_III_B, aes(x = factor(quintile), y = subregion, fill = avg_tax_pct)) +
   geom_tile() +
   scale_y_discrete(labels = subregion_labels) +
   scale_fill_viridis_c() +
   labs(
-    title = "Carbon Tax Effect by Subregion and Income Quintile",
+    title = "Carbon Tax Effect by Subregion and Income Quintile - Model 3B",
     x = "Income Quintile",
     y = "",
     fill = "Carbon Tax as a Share of Income"
   ) +
   theme_minimal()
 
-print(subregion_model_III_A)
+print(subregion_model_III_B)
 
 ```
 

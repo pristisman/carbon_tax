@@ -221,7 +221,7 @@ Building on the third model, we will perform a sensitivity analysis that tests m
 
 ##### Elasticity Analysis
 
-Based on our third model we will conduct a study on how increases in carbon prices affect household demand for different energy sources. Drawing on the estimates reported by [@zabaloy2022] and choose different levels of elasticities ranging from -0.09 to -0.76. Their findings highlight Argentina’s fuel demand as highly price-inelastic—largely a consequence of long-standing price controls and subsidies, limited short-run substitutes, and behavioural lock-in, with vehicles and appliances calibrated to persistently cheap energy.
+Building on our third model, we will examine how higher carbon prices reshape household demand for key energy sources. [@zabaloy2022] report short-run price elasticities ranging from –0.09 (highly inelastic) to –0.76 (more responsive). We adopt the upper-level magnitude of –0.76 for two reasons. First, several household fuels in the study—notably firewood, kerosene, and bottled gas—cluster near this more elastic estimate, so –0.76 offers a realistic benchmark for those segments of Argentina’s energy mix that can, in practice, be switched or curtailed. Second, using the most elastic value gives us an upper-bound scenario: it reveals the maximum plausible demand response and helps policymakers gauge the ceiling on emissions reductions, revenue volatility, and distributional impacts if households react more aggressively than the historical average. Third, the –0.76 elasticity is forward-looking.
 
 ##### Different Carbon Price Levels
 
@@ -724,7 +724,7 @@ Model A is our pure “status-quo” benchmark: it applies Argentina’s existin
 ##### Model
 
 ```{r}
-elasticity <- 0   # Change for different scenarios
+elasticity <- -0.76   # Change for different scenarios
 rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 gas_increment <- 0 # Change ratio to increase / decrease tax on gas articles
@@ -978,12 +978,12 @@ print(subregion_model_III_A)
 
 #### Scenario B
 
-By imposing a 50% surcharge on fossil fuels, the dirtiest energy sources, kerosene and coal, are hit hardest, while a modest 10% levy on gas only gently nudges users toward cleaner fuel. With a relatively high elasticity (ε = –0.15), this mix generates strong consumption shifts away from taxed fuels and toward subsidized or cleaner alternatives. By forgoing any rebates, the policy keeps the spotlight squarely on pure price signals to drive behavioral change and technology adoption.
+By imposing a 50% surcharge on fossil fuels, the dirtiest energy sources, kerosene and coal, are hit hardest, while a modest 10% levy on gas only gently nudges users toward cleaner fuel. With the elasticity, this mix generates strong consumption shifts away from taxed fuels and toward subsidized or cleaner alternatives. By forgoing any rebates, the policy keeps the spotlight squarely on pure price signals to drive behavioral change and technology adoption.
 
 ##### Model
 
 ```{r}
-elasticity <- -0.15   # Change for different scenarios
+elasticity <- -0.76   # Change for different scenarios
 rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 gas_increment <- 0.1 # Change ratio to increase / decrease tax on gas articles
@@ -1335,7 +1335,7 @@ By doubling the fossil‐fuel tax (a 100% surcharge), we send a clear signal to 
 ##### Model
 
 ```{r}
-elasticity <- -0.05   # Change for different scenarios
+elasticity <- -0.76   # Change for different scenarios
 rebate_mode <- "none"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 gas_increment <- 0.1 # Change ratio to increase / decrease tax on gas articles
@@ -1654,12 +1654,12 @@ print(subregion_model_III_C)
 
 #### Scenario D
 
-In this scenario we introduce modest carbon surcharges, 20% on gas, 15% on fossil fuels and 10% on firewood, while allowing a moderate behavioral response (ε = –0.08). Those price signals will nudge households to trim energy use without triggering drastic cutbacks, and by recycling 25% of all revenues back to consumers via a uniform rebate, we soften the burden equally across the board. The combination of differentiated surcharges and a broad-based rebate tests a revenue-neutral design: it still discourages pollution through higher prices, captures some of the resulting efficiency gains in the form of clean-energy investment funds, and cushions low- and middle-income families from seeing their energy bills spike.
+In this scenario we introduce modest carbon surcharges, 20% on gas, 15% on fossil fuels and 10% on firewood, while allowing for the same behavioral response. Those price signals will nudge households to trim energy use without triggering drastic cutbacks, and by recycling 25% of all revenues back to consumers via a uniform rebate, we soften the burden equally across the board. The combination of differentiated surcharges and a broad-based rebate tests a revenue-neutral design: it still discourages pollution through higher prices, captures some of the resulting efficiency gains in the form of clean-energy investment funds, and cushions low- and middle-income families from seeing their energy bills spike.
 
 ##### Model
 
 ```{r}
-elasticity <- -0.08   # Change for different scenarios
+elasticity <- -0.76   # Change for different scenarios
 rebate_mode <- "uniform"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 gas_increment <- 0.2 # Change ratio to increase / decrease tax on gas articles
@@ -1979,12 +1979,12 @@ print(subregion_model_III_D)
 
 #### Scenario E
 
-A bolder tax increase (+30%) across all polluting fuels to drive stronger carbon cuts, paired with a large targeted rebate (40% of revenues) for the poorest 40% to protect equity. The higher elasticity amplifies both emission reductions and welfare protections.
+A bolder tax increase (+30%) across all polluting fuels to drive stronger carbon cuts, paired with a large targeted rebate (40% of revenues) for the poorest 40% to protect equity.
 
 ##### Model
 
 ```{r}
-elasticity <- -0.12   # Change for different scenarios
+elasticity <- -0.76   # Change for different scenarios
 rebate_mode <- "by_quintile"  # Options: "none", "uniform", "by_quintile"
 rebate_target_quintiles <- c(1, 2)  # Only used if rebate_mode == "by_quintile"
 gas_increment <- 0.3 # Change ratio to increase / decrease tax on gas articles
@@ -2317,7 +2317,7 @@ library(future)
 plan(multisession, workers = 7)
 
 # Define elasticities and tax multipliers
-elasticities <- c(-0.9, -1, -1.1)
+elasticities <- c(-0.76, -1, -1.1)
 tax_multipliers <- seq(0, 200, by = 5)
 
 # Grid of combinations

@@ -225,7 +225,7 @@ We will evaluate revenue recycling mechanisms through cash transfers:
 
 ##### Geography Analysis
 
-Will the carbon tax have different effects in different parts of Argentina, as the prevalence of different climates accross the country could influence the impact on household's energy consumption.
+Will the carbon tax have different effects in different parts of Argentina, as the prevalence of different climates across the country could influence the impact on household's energy consumption.
 
 #### Final prices of energy depends on subsidy and geographic location
 
@@ -243,7 +243,7 @@ Energy generation price – set nationally and uniform across the country. Trans
 
 Income level and subsidy eligibility, and The specific distribution and tax rates set by their province or municipality. Electricity vs. Gas Regulation Electricity distribution is decentralized and regulated by provinces and municipalities, except in the Buenos Aires Metropolitan Area (AMBA), where it’s under national jurisdiction. Gas distribution remains under national regulation, managed by ENARGAS, with prices differentiated by service zones and subzones. While the generation cost is the same nationwide, the final bill varies significantly due to differences in local distribution charges (VAD) and regional tax burdens.
 
-## Microsimulation
+## Microsimulations
 
 ### Model I: A uniform tax across all households
 

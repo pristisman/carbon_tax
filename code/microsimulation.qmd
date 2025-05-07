@@ -399,7 +399,7 @@ print(subregion_model1)
 
 ### Model II: Tax varies according to energy source, with more pollutant sources with higher taxes, and is consistent with lump sums established by the Argentinian Government.
 
-In this third version of the model, we aim to create a microsimulation that more closely reflects the carbon taxation system currently in place in Argentina.
+In this second version of the model, we aim to create a microsimulation that more closely reflects the carbon taxation system currently in place in Argentina.
 
 Since our household survey is from 2018, with data collected in 2017, we will use the lump sums from the first trimester of 2018 as the basis for our calculations. However, because the survey spans from November 2017 to November 2018—a period during which tax rates changed—we will assume that the applicable lump sum is the average of the four quarterly amounts charged throughout 2018.
 
@@ -625,7 +625,7 @@ print(subregion_model2)
 
 #### Description
 
-In this second model, we aim to recreate a more plausible carbon tax system, drawing inspiration from Canada’s approach. Like Argentina, Canada sets absolute rates in Canadian dollars per specific volume or weight of various fossil fuels, with more polluting fuels taxed at higher rates than less polluting ones. It establishes specific rates for the following fossil fuels ([source](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/fcrates/fuel-charge-rates.html#fcrts)):
+In this third model, we aim to recreate a more plausible carbon tax system, drawing inspiration from Canada’s approach. Like Argentina, Canada sets absolute rates in Canadian dollars per specific volume or weight of various fossil fuels, with more polluting fuels taxed at higher rates than less polluting ones. It establishes specific rates for the following fossil fuels ([source](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/fcrates/fuel-charge-rates.html#fcrts)):
 
 -   Aviation gasoline
 
@@ -691,7 +691,7 @@ Since not all of the energy sources mentioned above are included in this study, 
 
 -   Other liquid fossil fuels: Gasoline, Heavy fuel oil, Light fuel oil, Methanol. Naphta
 
--   Coal: High heat value coal, Low heat value coal, Coke, Coke oven gas. Since these fuels are rarely used by households bur rather in industrial processes, and the charges associated with them are abnormally high, they will not be included in this study.
+-   Coal: High heat value coal, Low heat value coal, Coke, Coke oven gas. Since these fuels are rarely used by households bur rather in industrial processes, and the charges associated with them are abnormally high. In this case we are using a tax per kg of 5.6 ARS (0.3 USD at 2018 Argentina's exchange rate) that reflects a carbon price of roughly USD 125 per tonne CO2 matching the high end of the Paris-aligned benchmark and mirroring countries like Sweden.
 
 As we did in the case of Argentina, we will calculate an average rate per category, corresponding to the mean of the fuel charge rates applied to the relevant energy source usually used by households. For example, the tax applicable to bottled gas will be equal to the average of the rates for Propane, Butane, and Pentanes Plus. Once we have the average rates, we will apply the conversions described above to obtain values that can be compared to Argentina’s 2018 rates.
 

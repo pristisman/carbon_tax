@@ -125,9 +125,9 @@ subregion_labels <- c(
 
 #### Motivation
 
-With [394.76 million tonnes](https://www.climatewatchdata.org/countries/ARG?end_year=2021&start_year=1990) of CO₂ emitted in 2021, Argentina accounts for approximately 0.83% of global emissions. Although not a major polluter, the government implemented a tax reform in 2017 that included the introduction of a carbon tax through the amendment of Law No. 23.966. As a result, Argentina is one of the few Latin American countries with a carbon tax, alongside Colombia, Chile, Mexico, and Uruguay. This reform aligns with a growing global trend toward carbon taxation.
+With 394.76 million tonnes of CO₂ emitted in 2021, Argentina accounts for approximately 0.83% of global emissions [@climatewatch2025]. Although not a major polluter, the government implemented a tax reform in 2017 that included the introduction of a carbon tax through the amendment of Law No. 23.966. As a result, Argentina is one of the few Latin American countries with a carbon tax, alongside Colombia, Chile, Mexico, and Uruguay. This reform aligns with a growing global trend toward carbon taxation.
 
-Carbon taxes are increasingly seen as a crucial tool to drive environmental sustainability by reducing greenhouse gas emissions. [There are indeed, a cost-effective means of reducing emissions compared to command-and-control regulations or subsidies (Gugler et al., 2021).](https://www.sciencedirect.com/science/article/pii/S0095069620301285) As a Pigouvian tax, carbon pricing helps internalize the external costs of carbon emissions, creating incentives for households to adjust their energy consumption behavior toward cleaner alternatives.
+Carbon taxes are increasingly seen as a crucial tool to drive environmental sustainability by reducing greenhouse gas emissions. There are indeed, a cost-effective means of reducing emissions compared to command-and-control regulations or subsidies [@gugler2021]. As a Pigouvian tax, carbon pricing helps internalize the external costs of carbon emissions, creating incentives for households to adjust their energy consumption behavior toward cleaner alternatives.
 
 However, literature suggests that they can be regressive, disproportionately burdening lower-income households. This is particularly concerning given the global push toward ecological transition and sustainability. As countries implement carbon tax policies to meet their climate goals, it is essential to assess their potential socioeconomic impacts. Understanding how various income groups will be affected is critical to ensuring that the transition to a sustainable economy is both fair and inclusive. A well-designed policy can help mitigate the risk of exacerbating inequality, ensuring that environmental goals are achieved without disproportionately harming vulnerable populations.
 
@@ -139,15 +139,29 @@ To evaluate the distributional impact and policy design trade-offs of implementi
 
 Carbon taxes are difficult to design, as they involve the complex task of putting a price on emissions and valuing different sources of carbon dioxide emissions differently. There are many ways to approach this, which is why carbon taxes are regulated in a variety of ways across countries. For the purposes of our microsimulation, we will consider three different carbon tax models, drawing primarily from two countries. We will take inspiration from the Argentinian model, as well as from Canada, which has implemented a more aggressive carbon tax system.
 
-In 2017, Macri's government introduced a carbon tax, layered on top of an existing tax on liquid fuels. The carbon tax consists of fixed lump sums per unit volume of each fuel, adjusted for inflation every quarter and varying according to the carbon dioxide (CO₂) emissions associated with each fossil fuel. The government planned a gradual increase in the tax rate, an annual[10% hike from 2019 to 2028](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf). As of 2023, the carbon price resulting from these increases corresponded to approximately USD 10 per ton of C[O₂ (USD 10/tCO₂](https://www.mexico2.com.mx/uploadsmexico/file/Impuesto%20al%20Carbono%20en%20Argentina%20Enero%202023.pdf)). Tax rates are relatively low compared to the what is advised by the IMF, which sets the floor for middle-income countries at USD 50/tCO₂ ([source](https://www.cepal.org/en/publications/81239-economic-policy-and-climate-change-carbon-pricing-latin-america-and-caribbean)), but higher than in regional peers such as Chile, Colombia, and Mexico. The tax is applied upstream, targeting fuel importers and producers, rather than directly to households. Its design resembles that of a typical Pigouvian tax.
+In 2017, Macri's government introduced a carbon tax, layered on top of an existing tax on liquid fuels. The carbon tax consists of fixed lump sums per unit volume of each fuel, adjusted for inflation every quarter and varying according to the carbon dioxide (CO₂) emissions associated with each fossil fuel. The government planned a gradual increase in the tax rate, an annual 10% hike from 2019 to 2028 [@méxico2-plataformamexicanadecarbono2023]. As of 2023, the carbon price resulting from these increases corresponded to approximately USD 10 per ton of CO₂ (USD 10/tCO₂) [@méxico2-plataformamexicanadecarbono2023]. Tax rates are relatively low compared to the what is advised by the IMF, which sets the floor for middle-income countries at USD 50/tCO₂ [@economiccommissionforlatinamericaandthecaribbean2025], but higher than in regional peers such as Chile, Colombia, and Mexico. The tax is applied upstream, targeting fuel importers and producers, rather than directly to households. Its design resembles that of a typical Pigouvian tax.
 
-On the other hand, Canada has a dual carbon pricing system, consisting of a federal fuel charge and a separate system for large industrial emitters. The federal fuel charge is applied to producers, importers, and distributors of fossil fuels, as well as other CO₂-emitting entities such [as air and marine carriers.](https://www.canada.ca/en/revenue-agency/services/tax/excise-taxes-duties-levies/fuel-charge/registration.html)Although the charge is levied upstream, it is often passed on to consumers.
+On the other hand, Canada has a dual carbon pricing system, consisting of a federal fuel charge and a separate system for large industrial emitters. The federal fuel charge is applied to producers, importers, and distributors of fossil fuels, as well as other CO₂-emitting entities such as air and marine carriers [@canadarevenueagency2022][.](https://www.canada.ca/en/revenue-agency/services/tax/excise-taxes-duties-levies/fuel-charge/registration.html)Although the charge is levied upstream, it is often passed on to consumers.
 
-As of [April 2025](https://www.canada.ca/en/environment-climate-change/services/climate-change/pricing-pollution-how-it-will-work/putting-price-on-carbon-pollution.html), the federal fuel charge has been discontinued, but its structure will inform the design of this microsimulation. Like Argentina, Canada sets specific charges [for specific fuel types](https://www.canada.ca/en/department-finance/news/2021/12/fuel-charge-rates-for-listed-provinces-and-territories-for-2023-to-2030.html). However, each province is allowed to implement a higher carbon price than the federal benchmark. Other countries, such as Mexico, also apply differentiated carbon taxes across regions.
+As of April 2025, the federal fuel charge has been discontinued, but its structure will inform the design of this microsimulation [@canadaenvironmentandclimatechange2018]. Like Argentina, Canada sets specific charges for specific fuel types [@canadadepartmentoffinance2025]. However, each province is allowed to implement a higher carbon price than the federal benchmark. Other countries, such as Mexico, also apply differentiated carbon taxes across regions.
 
 Compared to Argentina, Canada enforces a higher and more uniform carbon price (approximately \$50/tCO₂e). Additionally, with the exception of the Yukon and Nunavut territories, Canada provides direct lump-sum rebates to households through the Canada Carbon Rebate scheme. These rebates are adjusted based on family size, rural residence, and province, helping to offset the increase in living costs resulting from the carbon tax. This model offers a valuable benchmark for balancing equity and efficiency in carbon pricing policy design.
 
-------------------------------------------------------------------------
+Moreover, energy sources are not uniform across regions in Argentina. By 2017–2018—the latest available data and the year Argentina introduced a minor carbon tax—an energy subsidy system was in place based on household income and geographic location (province). Subsidies applied to both electricity and natural gas.
+
+Under the 2018 segmentation scheme, residential users were divided into three categories:
+
+-   N1 (High income): Pay the full cost of energy.
+-   N2 (Low income): Receive full subsidies (tarifa social).
+-   N3 (Middle income): Receive partial subsidies with a consumption cap.
+
+How Final Energy Prices Are Determined Energy bills in Argentina reflect four main components:
+
+Energy generation price – set nationally and uniform across the country. Transmission costs – for transporting energy to distributors. Distribution costs (VAD) – set by local distributors and vary by province/municipality. Taxes – national, provincial, and municipal. Thus, the final price a household pays depends on:
+
+Income level and subsidy eligibility, and The specific distribution and tax rates set by their province or municipality. Electricity vs. Gas Regulation Electricity distribution is decentralized and regulated by provinces and municipalities, except in the Buenos Aires Metropolitan Area (AMBA), where it’s under national jurisdiction. Gas distribution remains under national regulation, managed by ENARGAS, with prices differentiated by service zones and subzones. While the generation cost is the same nationwide, the final bill varies significantly due to differences in local distribution charges (VAD) and regional tax burdens.
+
+## 
 
 ------------------------------------------------------------------------
 
@@ -155,7 +169,7 @@ Compared to Argentina, Canada enforces a higher and more uniform carbon price (a
 
 ------------------------------------------------------------------------
 
-\*\*Add comment \> argentina, not commited to reduce climate change, need to rise to be effective
+------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 
@@ -165,7 +179,7 @@ Compared to Argentina, Canada enforces a higher and more uniform carbon price (a
 
 Our basic model will have the following characteristics:
 
--   Use microdata from Argentina's national household expenditure survey (Encuesta Nacional de Gastos de los Hogares, ENGHo) to estimate baseline household spending on energy sources.
+-   Use microdata from Argentina's national household expenditure survey (Encuesta Nacional de Gastos de los Hogares, ENGHo) to estimate baseline household spending on energy sources [@indec:institutonacionaldeestadísticaycensosdelarepúblicaargentina2018].
 
 -   Apply carbon price increases to each energy source using the official carbon content conversion table (from Argentina's and Canada's tax authority).
 
@@ -222,26 +236,6 @@ We will evaluate revenue recycling mechanisms through cash transfers:
 -   Flat per capita rebate (uniform transfer to all)
 -   Progressive rebate (Enhanced rebates for lower-income households.
 -   Compare net distributional impacts: tax paid minus rebate received.
-
-##### Geography Analysis
-
-Will the carbon tax have different effects in different parts of Argentina, as the prevalence of different climates across the country could influence the impact on household's energy consumption.
-
-#### Final prices of energy depends on subsidy and geographic location
-
-By 2017–2018—the latest available data and the year Argentina introduced a minor carbon tax—an energy subsidy system was in place based on household income and geographic location (province). Subsidies applied to both electricity and natural gas.
-
-Under the 2022 segmentation scheme, residential users were divided into three categories:
-
--   N1 (High income): Pay the full cost of energy.
--   N2 (Low income): Receive full subsidies (tarifa social).
--   N3 (Middle income): Receive partial subsidies with a consumption cap.
-
-How Final Energy Prices Are Determined Energy bills in Argentina reflect four main components:
-
-Energy generation price – set nationally and uniform across the country. Transmission costs – for transporting energy to distributors. Distribution costs (VAD) – set by local distributors and vary by province/municipality. Taxes – national, provincial, and municipal. Thus, the final price a household pays depends on:
-
-Income level and subsidy eligibility, and The specific distribution and tax rates set by their province or municipality. Electricity vs. Gas Regulation Electricity distribution is decentralized and regulated by provinces and municipalities, except in the Buenos Aires Metropolitan Area (AMBA), where it’s under national jurisdiction. Gas distribution remains under national regulation, managed by ENARGAS, with prices differentiated by service zones and subzones. While the generation cost is the same nationwide, the final bill varies significantly due to differences in local distribution charges (VAD) and regional tax burdens.
 
 ## Microsimulations
 
@@ -618,7 +612,7 @@ print(subregion_model2)
 
 #### Description
 
-In this third model, we aim to recreate a more plausible carbon tax system, drawing inspiration from Canada’s approach. Like Argentina, Canada sets absolute rates in Canadian dollars per specific volume or weight of various fossil fuels, with more polluting fuels taxed at higher rates than less polluting ones. It establishes specific rates for the following fossil fuels ([source](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/fcrates/fuel-charge-rates.html#fcrts)):
+In this third model, we aim to recreate a more plausible carbon tax system, drawing inspiration from Canada’s approach. Like Argentina, Canada sets absolute rates in Canadian dollars per specific volume or weight of various fossil fuels, with more polluting fuels taxed at higher rates than less polluting ones. It establishes specific rates for the following fossil fuels [@canadadepartmentoffinance2025]:
 
 -   Aviation gasoline
 
@@ -666,9 +660,9 @@ In this third model, we aim to recreate a more plausible carbon tax system, draw
 
 -   Still gas.
 
-As in Argentina, fuel charge rates in Canada have been gradually increasing. The first carbon price introduced in Canada was set at CAD 20/CO₂t in 2019. Rates increased by CAD 10/CO₂t annually until 2022, and by CAD 15/CO₂t each year from 2023 to 2030. Thus, in 2024, the rate reached CAD 75/CO₂t, which is approximately USD 55.55/CO₂t. This is in line with the level at which middle-income countries should be pricing carbon, according to the IMF (USD 50/CO₂t) ([source](https://www.canada.ca/en/environment-climate-change/services/climate-change/pricing-pollution-how-it-will-work/carbon-pollution-pricing-federal-benchmark-information.html)).
+As in Argentina, fuel charge rates in Canada have been gradually increasing. The first carbon price introduced in Canada was set at CAD 20/CO₂t in 2019. Rates increased by CAD 10/CO₂t annually until 2022, and by CAD 15/CO₂t each year from 2023 to 2030. Thus, in 2024, the rate reached CAD 75/CO₂t, which is approximately USD 55.55/CO₂t. This is in line with the level at which middle-income countries should be pricing carbon, according to the IMF (USD 50/CO₂t)[@canadaenvironmentandclimatechange2021].
 
-For the purposes of this study, we make Canada’s fuel charges comparable to those of Argentina. Using the inflation calculator provided by the Bank of Canada ([source](https://www.bankofcanada.ca/rates/related/inflation-calculator/)), we calculate a price increase of 20.24% between 2018 and 2024. Accordingly, we adjust the 2024 fuel charge rates to their 2018 equivalents. We then apply the average 2018 exchange rate between the Argentine peso and the Canadian dollar (1 Argentine Peso = 0.04856 Canadian Dollar ([source](https://www.exchange-rates.org/exchange-rate-history/ars-cad-2018))) to convert the rates into Argentine pesos. It should noted that the exchange rate signficantly fluctuate during this year.
+For the purposes of this study, we make Canada’s fuel charges comparable to those of Argentina. Using the inflation calculator provided by the Bank of Canada [@bankofcanada2025], we calculate a price increase of 20.24% between 2018 and 2024. Accordingly, we adjust the 2024 fuel charge rates to their 2018 equivalents. We then apply the average 2018 exchange rate between the Argentine peso and the Canadian dollar (1 Argentine Peso = 0.04856 Canadian Dollar [@exchangerates2025] to convert the rates into Argentine pesos. It should noted that the exchange rate signficantly fluctuate during this year.
 
 Since not all of the energy sources mentioned above are included in this study, we will group the fossil fuels into broader categories based on the energy sources covered in this survey:
 

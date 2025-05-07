@@ -177,7 +177,7 @@ As such we have created three basic model that try to emulate three different ca
 
 -   A second model that attempts to mimic the Argentinean carbon tax as it is regulated with lump sums instead of tax rates, also with no behavioral response or rebates.
 
--   A third model that includes variation in tax rates depending on how pollutant the energy source used is mimicking the standards from Canada. In this third model we include variations in tax rates by energy type, behavioral response through elasticity, and the inclusion of different schemes of elaticities.
+-   A third model that includes variation in tax rates depending on how pollutant the energy source used is mimicking the standards from Canada. In this third model we include variations in tax rates by energy type, behavioral response through elasticity, and the inclusion of different schemes of rebates.
 
 #### Data Description
 

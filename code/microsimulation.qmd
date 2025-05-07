@@ -207,7 +207,7 @@ Building on the third model, we will perform a sensitivity analysis that tests m
 
 ##### Elasticity Analysis
 
-Built in the based model: We will conduct a study on how increases in carbon prices affect household demand for different energy sources. Drawing on the estimates reported by [@zabaloy2022] and choose different levels of elasticities ranging from -0.09 to -0.76. we will explore a range of price elasticities from –0.09 to –0.76. Their findings highlight Argentina’s fuel demand as highly price-inelastic—largely a consequence of long-standing price controls and subsidies, limited short-run substitutes, and behavioural lock-in, with vehicles and appliances calibrated to persistently cheap energy.
+Based on our third model we will conduct a study on how increases in carbon prices affect household demand for different energy sources. Drawing on the estimates reported by [@zabaloy2022] and choose different levels of elasticities ranging from -0.09 to -0.76. Their findings highlight Argentina’s fuel demand as highly price-inelastic—largely a consequence of long-standing price controls and subsidies, limited short-run substitutes, and behavioural lock-in, with vehicles and appliances calibrated to persistently cheap energy.
 
 ##### Different Carbon Price Levels
 
